@@ -5,6 +5,7 @@ import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
 import { addPageNumbers, getPdfPageCount, type PageNumberOptions } from "@/lib/pdf-client";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 
 type NumberFormat = "numeric" | "roman" | "withTotal";
 type NumberPosition = PageNumberOptions["position"];
@@ -25,6 +26,7 @@ const FORMATS: { value: NumberFormat; label: string; example: string }[] = [
 ];
 
 export default function PageNumbersPage() {
+  const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [pageCount, setPageCount] = useState(0);
   const [format, setFormat] = useState<NumberFormat>("numeric");
@@ -74,8 +76,11 @@ export default function PageNumbersPage() {
         size: blob.size,
       });
       setProgress(100);
+      toast.success("Page numbers added successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add page numbers.");
+      const msg = err instanceof Error ? err.message : "Failed to add page numbers.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }

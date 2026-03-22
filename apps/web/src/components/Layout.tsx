@@ -29,10 +29,10 @@ const mainNavItems = [
 ];
 
 const moreNavItems = [
-  { to: "/protect", label: "Protect", icon: ShieldCheck },
-  { to: "/watermark", label: "Watermark", icon: Stamp },
-  { to: "/page-numbers", label: "Page #", icon: Hash },
-  { to: "/metadata", label: "Metadata", icon: FileText },
+  { to: "/protect", label: "nav.protect", icon: ShieldCheck },
+  { to: "/watermark", label: "nav.watermark", icon: Stamp },
+  { to: "/page-numbers", label: "nav.pageNumbers", icon: Hash },
+  { to: "/metadata", label: "nav.metadata", icon: FileText },
 ];
 
 export default function Layout() {
@@ -53,7 +53,7 @@ export default function Layout() {
           </NavLink>
 
           {/* Desktop nav */}
-          <nav className="hidden md:flex items-center gap-1">
+          <nav aria-label="Main navigation" className="hidden md:flex items-center gap-1">
             {mainNavItems.map(({ to, label, icon: Icon, end }) => (
               <NavLink
                 key={to}
@@ -68,7 +68,7 @@ export default function Layout() {
                   )
                 }
               >
-                <Icon size={14} />
+                <Icon size={14} aria-hidden="true" />
                 {t(label)}
               </NavLink>
             ))}
@@ -78,18 +78,21 @@ export default function Layout() {
               <button
                 onClick={() => setMoreOpen(!moreOpen)}
                 onBlur={() => setTimeout(() => setMoreOpen(false), 150)}
+                aria-expanded={moreOpen}
+                aria-haspopup="menu"
+                aria-label="More tools"
                 className={cn(
-                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
                   moreOpen
                     ? "bg-indigo-500/20 text-indigo-300"
                     : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
                 )}
               >
-                <MoreHorizontal size={14} />
+                <MoreHorizontal size={14} aria-hidden="true" />
                 More
               </button>
               {moreOpen && (
-                <div className="absolute top-full right-0 mt-1 w-44 glass rounded-xl border border-indigo-500/20 py-1 shadow-xl z-50">
+                <div role="menu" className="absolute top-full right-0 mt-1 w-44 glass rounded-xl border border-indigo-500/20 py-1 shadow-xl z-50">
                   {moreNavItems.map(({ to, label, icon: Icon }) => (
                     <NavLink
                       key={to}
@@ -104,8 +107,8 @@ export default function Layout() {
                         )
                       }
                     >
-                      <Icon size={14} />
-                      {label}
+                      <Icon size={14} aria-hidden="true" />
+                      {t(label)}
                     </NavLink>
                   ))}
                 </div>
@@ -139,7 +142,7 @@ export default function Layout() {
         </div>
 
         {/* Mobile nav */}
-        <nav className="md:hidden flex overflow-x-auto border-t border-white/5 px-2 pb-1">
+        <nav aria-label="Main navigation" className="md:hidden flex overflow-x-auto border-t border-white/5 px-2 pb-1 scrollbar-none" style={{ scrollbarWidth: "none" }}>
           {([...mainNavItems, ...moreNavItems] as { to: string; label: string; icon: typeof Home; end?: boolean }[]).map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
@@ -154,8 +157,8 @@ export default function Layout() {
                 )
               }
             >
-              <Icon size={16} />
-              {typeof label === "string" && label.startsWith("nav.") ? t(label) : label}
+              <Icon size={16} aria-hidden="true" />
+              {t(label)}
             </NavLink>
           ))}
         </nav>

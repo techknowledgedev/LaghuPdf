@@ -10,6 +10,10 @@
     "split": "Split",
     "pageTools": "Page Tools",
     "convert": "Convert",
+    "protect": "Protect",
+    "watermark": "Watermark",
+    "pageNumbers": "Page #",
+    "metadata": "Metadata",
     "settings": "Settings"
   },
   "home": {

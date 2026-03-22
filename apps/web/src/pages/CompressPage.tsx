@@ -6,6 +6,7 @@ import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
 import { compressPdf } from "@/lib/api-client";
 import { downloadBlob, formatBytes, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 import {
   COMPRESSION_PRESETS,
   DEFAULT_COMPRESSION_OPTIONS,
@@ -15,6 +16,7 @@ import {
 
 export default function CompressPage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [options, setOptions] = useState<CompressionOptions>(DEFAULT_COMPRESSION_OPTIONS);
   const [processing, setProcessing] = useState(false);
@@ -58,8 +60,11 @@ export default function CompressPage() {
         inputSize: res.originalSize,
         outputSize: res.compressedSize,
       });
+      toast.success("PDF compressed successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Compression failed.");
+      const msg = err instanceof Error ? err.message : "Compression failed.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }

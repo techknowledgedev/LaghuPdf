@@ -6,11 +6,13 @@ import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
 import { protectPdf, unlockPdf } from "@/lib/pdf-client";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 
 type Mode = "protect" | "unlock";
 
 export default function ProtectPage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [mode, setMode] = useState<Mode>("protect");
   const [file, setFile] = useState<File | null>(null);
   const [userPassword, setUserPassword] = useState("");
@@ -52,8 +54,11 @@ export default function ProtectPage() {
         size: blob.size,
       });
       setProgress(100);
+      toast.success("PDF protected successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to protect PDF.");
+      const msg = err instanceof Error ? err.message : "Failed to protect PDF.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
@@ -78,13 +83,15 @@ export default function ProtectPage() {
         size: blob.size,
       });
       setProgress(100);
+      toast.success("PDF unlocked successfully!");
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      if (msg.includes("password") || msg.includes("decrypt")) {
-        setError("Incorrect password. Please try again.");
-      } else {
-        setError(msg);
-      }
+      const userMsg =
+        msg.includes("password") || msg.includes("decrypt")
+          ? "Incorrect password. Please try again."
+          : msg;
+      setError(userMsg);
+      toast.error(userMsg);
     } finally {
       setProcessing(false);
     }

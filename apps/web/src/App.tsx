@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import { useSettingsStore } from "@/store/settingsStore";
 import Layout from "@/components/Layout";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import Toaster from "@/components/Toaster";
 import Home from "@/pages/Home";
 import CompressPage from "@/pages/CompressPage";
 import MergePage from "@/pages/MergePage";
@@ -25,22 +27,25 @@ export default function App() {
   }, [theme]);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="compress" element={<CompressPage />} />
-          <Route path="merge" element={<MergePage />} />
-          <Route path="split" element={<SplitPage />} />
-          <Route path="page-tools" element={<PageToolsPage />} />
-          <Route path="convert" element={<ConvertPage />} />
-          <Route path="protect" element={<ProtectPage />} />
-          <Route path="watermark" element={<WatermarkPage />} />
-          <Route path="page-numbers" element={<PageNumbersPage />} />
-          <Route path="metadata" element={<MetadataPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <Toaster />
+      <BrowserRouter>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="compress" element={<CompressPage />} />
+            <Route path="merge" element={<MergePage />} />
+            <Route path="split" element={<SplitPage />} />
+            <Route path="page-tools" element={<PageToolsPage />} />
+            <Route path="convert" element={<ConvertPage />} />
+            <Route path="protect" element={<ProtectPage />} />
+            <Route path="watermark" element={<WatermarkPage />} />
+            <Route path="page-numbers" element={<PageNumbersPage />} />
+            <Route path="metadata" element={<MetadataPage />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ErrorBoundary>
   );
 }

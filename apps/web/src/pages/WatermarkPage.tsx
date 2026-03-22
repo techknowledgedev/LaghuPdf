@@ -11,6 +11,7 @@ import {
   type ImageWatermarkOptions,
 } from "@/lib/pdf-client";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 
 type WatermarkMode = "text" | "image";
 type Position = "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -32,6 +33,7 @@ const COLOR_PRESETS = [
 ];
 
 export default function WatermarkPage() {
+  const toast = useToast();
   const { t } = useTranslation();
   const [mode, setMode] = useState<WatermarkMode>("text");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
@@ -91,8 +93,11 @@ export default function WatermarkPage() {
         size: blob.size,
       });
       setProgress(100);
+      toast.success("Watermark added successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add watermark.");
+      const msg = err instanceof Error ? err.message : "Failed to add watermark.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
@@ -124,8 +129,11 @@ export default function WatermarkPage() {
         size: blob.size,
       });
       setProgress(100);
+      toast.success("Watermark added successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to add watermark.");
+      const msg = err instanceof Error ? err.message : "Failed to add watermark.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }

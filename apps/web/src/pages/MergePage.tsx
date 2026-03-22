@@ -21,6 +21,7 @@ import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
 import { mergePdfs } from "@/lib/pdf-client";
 import { formatBytes, arrayBufferToBlob, downloadBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 
 interface FileItem {
   id: string;
@@ -65,6 +66,7 @@ function SortableFile({
 
 export default function MergePage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [items, setItems] = useState<FileItem[]>([]);
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -113,8 +115,11 @@ export default function MergePage() {
       const name = generateOutputName(items[0].file.name, "_merged");
       setResult({ url, name, size: blob.size });
       setProgress(100);
+      toast.success("PDFs merged successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Merge failed.");
+      const msg = err instanceof Error ? err.message : "Merge failed.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }

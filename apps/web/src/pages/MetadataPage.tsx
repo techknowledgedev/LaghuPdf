@@ -5,8 +5,10 @@ import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
 import { getPdfMetadata, setPdfMetadata, type PdfMetadata } from "@/lib/pdf-client";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 
 export default function MetadataPage() {
+  const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
   const [loading, setLoading] = useState(false);
@@ -50,7 +52,9 @@ export default function MetadataPage() {
       setModificationDate(meta.modificationDate ?? "");
       setPageCount(meta.pageCount);
     } catch (err) {
-      setError("Failed to read PDF metadata.");
+      const msg = "Failed to read PDF metadata.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -79,8 +83,11 @@ export default function MetadataPage() {
         size: blob.size,
       });
       setProgress(100);
+      toast.success("Metadata saved successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update metadata.");
+      const msg = err instanceof Error ? err.message : "Failed to update metadata.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
