@@ -7,11 +7,39 @@ import OutputCard from "@/components/OutputCard";
 import {
   addTextWatermark,
   addImageWatermark,
+  getPdfPageCount,
   type TextWatermarkOptions,
   type ImageWatermarkOptions,
 } from "@/lib/pdf-client";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
 import { useToast } from "@/store/toastStore";
+
+type PageScope = "all" | "odd" | "even" | "first" | "last" | "custom";
+
+function computePages(scope: PageScope, total: number, custom: string): number[] | undefined {
+  switch (scope) {
+    case "all": return undefined;
+    case "odd": return Array.from({ length: Math.ceil(total / 2) }, (_, i) => i * 2);
+    case "even": return Array.from({ length: Math.floor(total / 2) }, (_, i) => i * 2 + 1);
+    case "first": return [0];
+    case "last": return [total - 1];
+    case "custom": {
+      const indices: number[] = [];
+      for (const part of custom.split(",").map((s) => s.trim())) {
+        const m = part.match(/^(\d+)\s*[-–]\s*(\d+)$/);
+        if (m) {
+          for (let i = parseInt(m[1]); i <= parseInt(m[2]); i++) {
+            if (i >= 1 && i <= total) indices.push(i - 1);
+          }
+        } else {
+          const n = parseInt(part);
+          if (!isNaN(n) && n >= 1 && n <= total) indices.push(n - 1);
+        }
+      }
+      return [...new Set(indices)].sort((a, b) => a - b);
+    }
+  }
+}
 
 type WatermarkMode = "text" | "image";
 type Position = "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
@@ -37,7 +65,12 @@ export default function WatermarkPage() {
   const { t } = useTranslation();
   const [mode, setMode] = useState<WatermarkMode>("text");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pageCount, setPageCount] = useState(0);
   const [imageFile, setImageFile] = useState<File | null>(null);
+
+  // Page scope
+  const [pageScope, setPageScope] = useState<PageScope>("all");
+  const [customPages, setCustomPages] = useState("");
 
   // Text watermark options
   const [text, setText] = useState("CONFIDENTIAL");
@@ -57,10 +90,19 @@ export default function WatermarkPage() {
   const [result, setResult] = useState<{ url: string; name: string; size: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const onPdfFiles = useCallback((files: File[]) => {
-    setPdfFile(files[0]);
+  const onPdfFiles = useCallback(async (files: File[]) => {
+    const f = files[0];
+    setPdfFile(f);
     setResult(null);
     setError(null);
+    try {
+      const buf = await f.arrayBuffer();
+      const count = await getPdfPageCount(buf);
+      setPageCount(count);
+      setCustomPages(`1-${count}`);
+    } catch {
+      setPageCount(0);
+    }
   }, []);
 
   const onImageFiles = useCallback((files: File[]) => {
@@ -76,6 +118,7 @@ export default function WatermarkPage() {
     try {
       const buf = await pdfFile.arrayBuffer();
       setProgress(40);
+      const pages = computePages(pageScope, pageCount, customPages);
       const output = await addTextWatermark(buf, {
         text,
         fontSize,
@@ -83,6 +126,7 @@ export default function WatermarkPage() {
         rotation,
         color: { r: color.r, g: color.g, b: color.b },
         position,
+        pages,
       });
       setProgress(90);
       const blob = arrayBufferToBlob(output.buffer as ArrayBuffer);
@@ -113,12 +157,14 @@ export default function WatermarkPage() {
       const pdfBuf = await pdfFile.arrayBuffer();
       const imgBuf = await imageFile.arrayBuffer();
       setProgress(40);
+      const pages = computePages(pageScope, pageCount, customPages);
       const output = await addImageWatermark(pdfBuf, {
         imageBuffer: imgBuf,
         imageType: imageFile.type as "image/png" | "image/jpeg",
         scale: imageScale,
         opacity: imageOpacity,
         position: imagePosition,
+        pages,
       });
       setProgress(90);
       const blob = arrayBufferToBlob(output.buffer as ArrayBuffer);
@@ -192,6 +238,36 @@ export default function WatermarkPage() {
                 <p className="text-xs text-slate-400">{formatBytes(pdfFile.size)}</p>
               </div>
               <button onClick={() => setPdfFile(null)} className="text-xs text-slate-400 hover:text-red-400">Remove</button>
+            </div>
+          )}
+
+          {pdfFile && (
+            <div className="glass rounded-2xl p-4 space-y-3">
+              <label className="text-xs text-slate-400 block">Apply to pages</label>
+              <div className="flex flex-wrap gap-2">
+                {(["all", "odd", "even", "first", "last", "custom"] as PageScope[]).map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setPageScope(s)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border capitalize transition-all ${
+                      pageScope === s
+                        ? "border-orange-500 bg-orange-500/20 text-orange-200"
+                        : "border-white/10 text-slate-400 hover:border-white/20"
+                    }`}
+                  >
+                    {s === "all" ? `All ${pageCount > 0 ? `(${pageCount})` : "pages"}` : s === "custom" ? "Custom range" : s}
+                  </button>
+                ))}
+              </div>
+              {pageScope === "custom" && (
+                <input
+                  type="text"
+                  value={customPages}
+                  onChange={(e) => setCustomPages(e.target.value)}
+                  placeholder="e.g. 1, 3, 5-7"
+                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-orange-500"
+                />
+              )}
             </div>
           )}
 

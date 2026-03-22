@@ -33,6 +33,7 @@ export default function PageNumbersPage() {
   const [position, setPosition] = useState<NumberPosition>("bottom-center");
   const [fontSize, setFontSize] = useState(10);
   const [startNumber, setStartNumber] = useState(1);
+  const [skipFirst, setSkipFirst] = useState(0);
   const [prefix, setPrefix] = useState("");
   const [margin, setMargin] = useState(30);
   const [processing, setProcessing] = useState(false);
@@ -58,6 +59,12 @@ export default function PageNumbersPage() {
     try {
       const buf = await file.arrayBuffer();
       setProgress(50);
+      // Compute pages to number (0-based), skipping first N if set
+      const pagesToNumber: number[] | undefined =
+        skipFirst > 0
+          ? Array.from({ length: Math.max(0, pageCount - skipFirst) }, (_, i) => i + skipFirst)
+          : undefined;
+
       const output = await addPageNumbers(buf, {
         format,
         position,
@@ -66,6 +73,7 @@ export default function PageNumbersPage() {
         prefix: prefix || undefined,
         margin,
         color: { r: 0.3, g: 0.3, b: 0.3 },
+        pages: pagesToNumber,
       });
       setProgress(90);
       const blob = arrayBufferToBlob(output.buffer as ArrayBuffer);
@@ -92,6 +100,7 @@ export default function PageNumbersPage() {
     setError(null);
     setProgress(0);
     setPageCount(0);
+    setSkipFirst(0);
   };
 
   // Preview string
@@ -216,17 +225,41 @@ export default function PageNumbersPage() {
                 </div>
               </div>
 
-              {/* Prefix */}
-              <div>
-                <label className="text-xs text-slate-400 block mb-1">Prefix (optional)</label>
-                <input
-                  type="text"
-                  value={prefix}
-                  onChange={(e) => setPrefix(e.target.value)}
-                  placeholder='e.g. "Page ", "- "'
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
-                />
+              {/* Prefix + Skip first row */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">Prefix (optional)</label>
+                  <input
+                    type="text"
+                    value={prefix}
+                    onChange={(e) => setPrefix(e.target.value)}
+                    placeholder='e.g. "Page ", "- "'
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-sky-500"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-400 block mb-1">
+                    Skip first pages
+                    {skipFirst > 0 && (
+                      <span className="text-sky-400 ml-1">(cover + {skipFirst - 1} more)</span>
+                    )}
+                  </label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={Math.max(0, pageCount - 1)}
+                    value={skipFirst}
+                    onChange={(e) => setSkipFirst(Math.max(0, Number(e.target.value)))}
+                    className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-sky-500"
+                  />
+                </div>
               </div>
+
+              {skipFirst > 0 && (
+                <p className="text-xs text-slate-500 bg-white/5 rounded-lg px-3 py-2">
+                  Page numbers will start on page {skipFirst + 1} and show number {startNumber}.
+                </p>
+              )}
             </div>
           )}
 

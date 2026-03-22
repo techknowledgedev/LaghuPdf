@@ -1,25 +1,52 @@
 import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Scissors, Plus, X, Download } from "lucide-react";
+import { Scissors, Plus, X, Download, FileOutput } from "lucide-react";
 import DropZone from "@/components/DropZone";
 import ProgressBar from "@/components/ProgressBar";
-import { splitPdfByRanges, splitPdfEveryNPages, getPdfPageCount } from "@/lib/pdf-client";
-import { formatBytes, arrayBufferToBlob, downloadBlob, generateOutputName } from "@/lib/utils";
-import type { SplitRange, SplitMode } from "@pdftwist/shared";
+import { splitPdfByRanges, splitPdfEveryNPages, extractPdfPages, getPdfPageCount } from "@/lib/pdf-client";
+import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
+import type { SplitRange } from "@pdftwist/shared";
+
+type SplitMode = "range" | "every" | "extract";
 
 interface RangeEntry extends SplitRange {
   id: string;
 }
 
+/**
+ * Parse a page selection string like "1, 3, 5-7, 10" into 0-based indices.
+ * Returns null if the string is invalid.
+ */
+function parsePageSelection(input: string, total: number): number[] | null {
+  const indices: number[] = [];
+  const parts = input.split(",").map((s) => s.trim()).filter(Boolean);
+  for (const part of parts) {
+    const rangeMatch = part.match(/^(\d+)\s*[-–]\s*(\d+)$/);
+    if (rangeMatch) {
+      const from = parseInt(rangeMatch[1]);
+      const to = parseInt(rangeMatch[2]);
+      if (isNaN(from) || isNaN(to) || from < 1 || to > total || from > to) return null;
+      for (let i = from; i <= to; i++) indices.push(i - 1);
+    } else {
+      const n = parseInt(part);
+      if (isNaN(n) || n < 1 || n > total) return null;
+      indices.push(n - 1);
+    }
+  }
+  // Deduplicate and sort
+  return [...new Set(indices)].sort((a, b) => a - b);
+}
+
 export default function SplitPage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [pageCount, setPageCount] = useState(0);
   const [mode, setMode] = useState<SplitMode>("range");
-  const [ranges, setRanges] = useState<RangeEntry[]>([
-    { id: "1", start: 1, end: 1 },
-  ]);
+  const [ranges, setRanges] = useState<RangeEntry[]>([{ id: "1", start: 1, end: 1 }]);
   const [everyN, setEveryN] = useState(1);
+  const [extractInput, setExtractInput] = useState("");
   const [processing, setProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [outputs, setOutputs] = useState<{ name: string; url: string; size: number }[]>([]);
@@ -34,21 +61,17 @@ export default function SplitPage() {
     const count = await getPdfPageCount(buf);
     setPageCount(count);
     setRanges([{ id: "1", start: 1, end: count }]);
+    setExtractInput(`1-${count}`);
   }, []);
 
   const addRange = () =>
-    setRanges((prev) => [
-      ...prev,
-      { id: String(Date.now()), start: 1, end: pageCount },
-    ]);
+    setRanges((prev) => [...prev, { id: String(Date.now()), start: 1, end: pageCount }]);
 
   const removeRange = (id: string) =>
     setRanges((prev) => prev.filter((r) => r.id !== id));
 
   const updateRange = (id: string, key: "start" | "end", val: number) =>
-    setRanges((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, [key]: val } : r))
-    );
+    setRanges((prev) => prev.map((r) => (r.id === id ? { ...r, [key]: val } : r)));
 
   const handleSplit = async () => {
     if (!file) return;
@@ -59,6 +82,24 @@ export default function SplitPage() {
     try {
       const buf = await file.arrayBuffer();
       setProgress(30);
+
+      if (mode === "extract") {
+        const indices = parsePageSelection(extractInput, pageCount);
+        if (!indices || indices.length === 0) {
+          setError("Invalid page selection. Use format: 1, 3, 5-7");
+          setProcessing(false);
+          return;
+        }
+        const output = await extractPdfPages(buf, indices);
+        setProgress(85);
+        const blob = arrayBufferToBlob(output.buffer as ArrayBuffer);
+        const url = URL.createObjectURL(blob);
+        const name = generateOutputName(file.name, "_extracted");
+        setOutputs([{ name, url, size: blob.size }]);
+        setProgress(100);
+        toast.success(`Extracted ${indices.length} page${indices.length !== 1 ? "s" : ""} successfully!`);
+        return;
+      }
 
       let parts: Uint8Array[];
       if (mode === "range") {
@@ -71,19 +112,19 @@ export default function SplitPage() {
       const results = parts.map((part, i) => {
         const blob = arrayBufferToBlob(part.buffer as ArrayBuffer);
         const url = URL.createObjectURL(blob);
-        const name = generateOutputName(
-          file.name,
-          mode === "range"
-            ? `_p${ranges[i]?.start}-${ranges[i]?.end}`
-            : `_part${i + 1}`
-        );
-        return { name, url, size: blob.size };
+        const suffix = mode === "range"
+          ? `_p${ranges[i]?.start}-${ranges[i]?.end}`
+          : `_part${i + 1}`;
+        return { name: generateOutputName(file.name, suffix), url, size: blob.size };
       });
 
       setOutputs(results);
       setProgress(100);
+      toast.success(`Split into ${results.length} file${results.length !== 1 ? "s" : ""}!`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Split failed.");
+      const msg = err instanceof Error ? err.message : "Split failed.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
@@ -103,11 +144,13 @@ export default function SplitPage() {
     setOutputs([]);
     setProgress(0);
     setPageCount(0);
+    setError(null);
   };
 
   const modes: { key: SplitMode; label: string }[] = [
     { key: "range", label: t("split.mode.range") },
     { key: "every", label: t("split.mode.every") },
+    { key: "extract", label: "Extract pages" },
   ];
 
   return (
@@ -118,9 +161,7 @@ export default function SplitPage() {
         </div>
         <div>
           <h1 className="text-2xl font-bold">{t("split.title")}</h1>
-          <p className="text-sm text-slate-400">
-            Processed entirely in your browser — no upload
-          </p>
+          <p className="text-sm text-slate-400">Processed entirely in your browser — no upload</p>
         </div>
       </div>
 
@@ -139,7 +180,7 @@ export default function SplitPage() {
               </div>
               <button
                 onClick={() => setFile(null)}
-                className="text-xs text-slate-400 hover:text-red-400 px-2 py-1 rounded"
+                className="text-xs text-slate-400 hover:text-red-400 px-2 py-1 rounded transition-colors"
               >
                 Remove
               </button>
@@ -149,7 +190,7 @@ export default function SplitPage() {
           {file && (
             <div className="glass rounded-2xl p-5 space-y-4">
               {/* Mode tabs */}
-              <div className="flex gap-2 bg-white/5 rounded-xl p-1">
+              <div className="flex gap-1.5 bg-white/5 rounded-xl p-1">
                 {modes.map(({ key, label }) => (
                   <button
                     key={key}
@@ -171,33 +212,25 @@ export default function SplitPage() {
                     <div key={range.id} className="flex items-center gap-3">
                       <div className="flex-1 flex items-center gap-2">
                         <div className="flex-1">
-                          <label className="text-xs text-slate-400 block mb-1">
-                            From page
-                          </label>
+                          <label className="text-xs text-slate-400 block mb-1">From page</label>
                           <input
                             type="number"
                             min={1}
                             max={pageCount}
                             value={range.start}
-                            onChange={(e) =>
-                              updateRange(range.id, "start", Number(e.target.value))
-                            }
+                            onChange={(e) => updateRange(range.id, "start", Number(e.target.value))}
                             className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-pink-500"
                           />
                         </div>
                         <span className="text-slate-500 mt-5">–</span>
                         <div className="flex-1">
-                          <label className="text-xs text-slate-400 block mb-1">
-                            To page
-                          </label>
+                          <label className="text-xs text-slate-400 block mb-1">To page</label>
                           <input
                             type="number"
                             min={1}
                             max={pageCount}
                             value={range.end}
-                            onChange={(e) =>
-                              updateRange(range.id, "end", Number(e.target.value))
-                            }
+                            onChange={(e) => updateRange(range.id, "end", Number(e.target.value))}
                             className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-pink-500"
                           />
                         </div>
@@ -206,6 +239,7 @@ export default function SplitPage() {
                         <button
                           onClick={() => removeRange(range.id)}
                           className="text-slate-500 hover:text-red-400 mt-5 transition-colors"
+                          aria-label="Remove range"
                         >
                           <X size={16} />
                         </button>
@@ -231,7 +265,7 @@ export default function SplitPage() {
                       min={1}
                       max={pageCount}
                       value={everyN}
-                      onChange={(e) => setEveryN(Number(e.target.value))}
+                      onChange={(e) => setEveryN(Math.max(1, Number(e.target.value)))}
                       className="inline-block w-16 bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-sm font-mono mx-1 focus:outline-none focus:border-pink-500"
                     />{" "}
                     page{everyN !== 1 ? "s" : ""}
@@ -242,14 +276,49 @@ export default function SplitPage() {
                   </p>
                 </div>
               )}
+
+              {mode === "extract" && (
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-sm font-medium text-slate-300 block mb-1.5">
+                      Pages to extract
+                    </label>
+                    <input
+                      type="text"
+                      value={extractInput}
+                      onChange={(e) => setExtractInput(e.target.value)}
+                      placeholder="e.g. 1, 3, 5-7, 10"
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-pink-500"
+                    />
+                    <p className="text-xs text-slate-500 mt-1.5">
+                      Use commas and ranges (e.g. <code className="text-pink-400">1, 3-5, 8</code>). All selected pages go into one PDF.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: "Odd pages", value: Array.from({ length: Math.ceil(pageCount / 2) }, (_, i) => i * 2 + 1).join(", ") },
+                      { label: "Even pages", value: Array.from({ length: Math.floor(pageCount / 2) }, (_, i) => (i + 1) * 2).join(", ") },
+                      { label: "First half", value: `1-${Math.floor(pageCount / 2)}` },
+                      { label: "Last half", value: `${Math.floor(pageCount / 2) + 1}-${pageCount}` },
+                    ].map(({ label, value }) => (
+                      <button
+                        key={label}
+                        onClick={() => setExtractInput(value)}
+                        className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-pink-500/15 hover:bg-pink-500/25 text-pink-300 text-xs font-medium transition-colors"
+                      >
+                        <FileOutput size={11} />
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
           {processing && <ProgressBar value={progress} label={t("split.splitting")} />}
           {error && (
-            <div className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-3">
-              {error}
-            </div>
+            <div className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-3">{error}</div>
           )}
 
           <button
@@ -257,7 +326,11 @@ export default function SplitPage() {
             disabled={!file || processing}
             className="w-full py-3 rounded-xl bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-400 hover:to-rose-400 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm transition-all"
           >
-            {processing ? t("split.splitting") : t("split.split")}
+            {processing
+              ? t("split.splitting")
+              : mode === "extract"
+              ? "Extract pages"
+              : t("split.split")}
           </button>
         </>
       )}
@@ -269,13 +342,15 @@ export default function SplitPage() {
               {outputs.length} file{outputs.length !== 1 ? "s" : ""} ready
             </h2>
             <div className="flex gap-2">
-              <button
-                onClick={downloadAll}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-colors"
-              >
-                <Download size={14} />
-                Download all
-              </button>
+              {outputs.length > 1 && (
+                <button
+                  onClick={downloadAll}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-sm font-medium transition-colors"
+                >
+                  <Download size={14} />
+                  Download all
+                </button>
+              )}
               <button
                 onClick={reset}
                 className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 text-sm transition-colors"
@@ -286,10 +361,7 @@ export default function SplitPage() {
           </div>
           <div className="space-y-2">
             {outputs.map(({ name, url, size }) => (
-              <div
-                key={url}
-                className="glass rounded-xl px-4 py-3 flex items-center gap-3"
-              >
+              <div key={url} className="glass rounded-xl px-4 py-3 flex items-center gap-3">
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{name}</p>
                   <p className="text-xs text-slate-400">{formatBytes(size)}</p>
@@ -297,7 +369,7 @@ export default function SplitPage() {
                 <a
                   href={url}
                   download={name}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                  className="flex items-center gap-1 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
                 >
                   <Download size={13} />
                   Download

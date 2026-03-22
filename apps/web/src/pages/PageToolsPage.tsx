@@ -6,24 +6,29 @@ import {
   RotateCcw,
   Trash2,
   Download,
+  FileOutput,
   CheckSquare,
   Square,
 } from "lucide-react";
 import DropZone from "@/components/DropZone";
+import EmptyState from "@/components/EmptyState";
 import PageGrid, { type PageItem } from "@/components/PageGrid";
 import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
+import { PageGridSkeleton } from "@/components/Skeleton";
 import {
   rotatePdfPages,
-  deletePdfPages,
   reorderPdfPages,
+  extractPdfPages,
 } from "@/lib/pdf-client";
 import { generateThumbnails } from "@/lib/pdf-renderer";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 import type { RotationDegrees } from "@pdftwist/shared";
 
 export default function PageToolsPage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [file, setFile] = useState<File | null>(null);
   const [fileBuffer, setFileBuffer] = useState<ArrayBuffer | null>(null);
   const [pages, setPages] = useState<PageItem[]>([]);
@@ -56,10 +61,11 @@ export default function PageToolsPage() {
       );
     } catch {
       setError("Failed to load PDF.");
+      toast.error("Failed to load PDF.");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   const toggleSelect = (id: string) =>
     setSelectedIds((prev) => {
@@ -68,22 +74,19 @@ export default function PageToolsPage() {
       return next;
     });
 
-  const selectAll = () => setSelectedIds(new Set(pages.filter((p) => !p.deleted).map((p) => p.id)));
+  const activePages = pages.filter((p) => !p.deleted);
+  const selectAll = () => setSelectedIds(new Set(activePages.map((p) => p.id)));
   const deselectAll = () => setSelectedIds(new Set());
 
   const rotatePage = (id: string) =>
     setPages((prev) =>
       prev.map((p) =>
-        p.id === id
-          ? { ...p, rotation: (((p.rotation + 90) % 360) as RotationDegrees) }
-          : p
+        p.id === id ? { ...p, rotation: (((p.rotation + 90) % 360) as RotationDegrees) } : p
       )
     );
 
   const deletePageItem = (id: string) => {
-    setPages((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, deleted: true } : p))
-    );
+    setPages((prev) => prev.map((p) => (p.id === id ? { ...p, deleted: true } : p)));
     setSelectedIds((prev) => {
       const next = new Set(prev);
       next.delete(id);
@@ -101,9 +104,7 @@ export default function PageToolsPage() {
     );
 
   const deleteSelected = () => {
-    setPages((prev) =>
-      prev.map((p) => (selectedIds.has(p.id) ? { ...p, deleted: true } : p))
-    );
+    setPages((prev) => prev.map((p) => (selectedIds.has(p.id) ? { ...p, deleted: true } : p)));
     setSelectedIds(new Set());
   };
 
@@ -114,21 +115,20 @@ export default function PageToolsPage() {
     setError(null);
 
     try {
-      const activePagesOrdered = pages.filter((p) => !p.deleted);
+      const activePagesOrdered = activePages;
       let buf = fileBuffer;
 
-      // 1. Reorder
       setProgress(25);
       buf = (await reorderPdfPages(buf, activePagesOrdered.map((p) => p.originalIndex))).buffer as ArrayBuffer;
 
-      // 2. Rotate pages that need it
       setProgress(50);
-      const rotations = activePagesOrdered.reduce<
-        { idx: number; deg: RotationDegrees }[]
-      >((acc, p, newIdx) => {
-        if (p.rotation !== 0) acc.push({ idx: newIdx, deg: p.rotation });
-        return acc;
-      }, []);
+      const rotations = activePagesOrdered.reduce<{ idx: number; deg: RotationDegrees }[]>(
+        (acc, p, newIdx) => {
+          if (p.rotation !== 0) acc.push({ idx: newIdx, deg: p.rotation });
+          return acc;
+        },
+        []
+      );
 
       for (const { idx, deg } of rotations) {
         buf = (await rotatePdfPages(buf, [idx], deg)).buffer as ArrayBuffer;
@@ -140,8 +140,41 @@ export default function PageToolsPage() {
       const name = generateOutputName(file!.name, "_edited");
       setResult({ url, name, size: blob.size });
       setProgress(100);
+      toast.success("PDF saved successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to save.");
+      const msg = err instanceof Error ? err.message : "Failed to save.";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleExtractSelected = async () => {
+    if (!fileBuffer || selectedIds.size === 0) return;
+    setProcessing(true);
+    setProgress(20);
+    setError(null);
+
+    try {
+      // Get original indices of selected (non-deleted) pages in order
+      const selectedOriginalIndices = activePages
+        .filter((p) => selectedIds.has(p.id))
+        .map((p) => p.originalIndex);
+
+      setProgress(50);
+      const output = await extractPdfPages(fileBuffer, selectedOriginalIndices);
+      setProgress(90);
+      const blob = arrayBufferToBlob(output.buffer as ArrayBuffer);
+      const url = URL.createObjectURL(blob);
+      const name = generateOutputName(file!.name, "_extracted");
+      setResult({ url, name, size: blob.size });
+      setProgress(100);
+      toast.success(`Extracted ${selectedOriginalIndices.length} page${selectedOriginalIndices.length !== 1 ? "s" : ""}!`);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to extract.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
@@ -154,9 +187,10 @@ export default function PageToolsPage() {
     setResult(null);
     setProgress(0);
     setSelectedIds(new Set());
+    setError(null);
   };
 
-  const activeCount = pages.filter((p) => !p.deleted).length;
+  const activeCount = activePages.length;
   const selectedCount = selectedIds.size;
 
   return (
@@ -178,8 +212,12 @@ export default function PageToolsPage() {
           {!file ? (
             <DropZone onFiles={onFiles} />
           ) : loading ? (
-            <div className="text-center py-16 text-slate-400">
-              Generating thumbnails…
+            <div className="space-y-4">
+              <div className="glass rounded-2xl p-3 flex items-center gap-3">
+                <div className="h-7 w-7 rounded-lg bg-white/10 animate-skeleton" />
+                <div className="flex-1 h-4 bg-white/10 rounded animate-skeleton" />
+              </div>
+              <PageGridSkeleton count={12} />
             </div>
           ) : (
             <>
@@ -196,13 +234,10 @@ export default function PageToolsPage() {
 
                 <button
                   onClick={selectedCount === activeCount ? deselectAll : selectAll}
+                  aria-label={selectedCount === activeCount ? "Deselect all" : "Select all"}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-xs font-medium text-slate-300 transition-colors"
                 >
-                  {selectedCount === activeCount ? (
-                    <CheckSquare size={13} />
-                  ) : (
-                    <Square size={13} />
-                  )}
+                  {selectedCount === activeCount ? <CheckSquare size={13} /> : <Square size={13} />}
                   {selectedCount === activeCount ? "Deselect all" : "Select all"}
                 </button>
 
@@ -236,6 +271,14 @@ export default function PageToolsPage() {
                       <Trash2 size={13} />
                       Delete
                     </button>
+                    <button
+                      onClick={handleExtractSelected}
+                      disabled={processing}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-indigo-500/20 text-xs font-medium text-slate-300 hover:text-indigo-300 transition-colors disabled:opacity-50"
+                    >
+                      <FileOutput size={13} />
+                      Extract
+                    </button>
                   </>
                 )}
 
@@ -251,23 +294,34 @@ export default function PageToolsPage() {
                 </button>
               </div>
 
-              {/* Page grid */}
-              <PageGrid
-                pages={pages}
-                selectedIds={selectedIds}
-                onReorder={setPages}
-                onToggleSelect={toggleSelect}
-                onRotatePage={rotatePage}
-                onDeletePage={deletePageItem}
-              />
-
-              {processing && (
-                <ProgressBar value={progress} label={t("pageTools.saving")} />
+              {activeCount === 0 ? (
+                <EmptyState
+                  icon={Trash2}
+                  title="All pages deleted"
+                  description="Add more pages or reset to start over."
+                  action={
+                    <button
+                      onClick={reset}
+                      className="px-4 py-2 text-sm rounded-xl bg-white/10 hover:bg-white/15 text-slate-300 transition-colors"
+                    >
+                      Start over
+                    </button>
+                  }
+                />
+              ) : (
+                <PageGrid
+                  pages={pages}
+                  selectedIds={selectedIds}
+                  onReorder={setPages}
+                  onToggleSelect={toggleSelect}
+                  onRotatePage={rotatePage}
+                  onDeletePage={deletePageItem}
+                />
               )}
+
+              {processing && <ProgressBar value={progress} label={t("pageTools.saving")} />}
               {error && (
-                <div className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-3">
-                  {error}
-                </div>
+                <div className="text-sm text-red-400 bg-red-400/10 rounded-xl px-4 py-3">{error}</div>
               )}
             </>
           )}

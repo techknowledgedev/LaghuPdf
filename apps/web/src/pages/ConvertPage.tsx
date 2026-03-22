@@ -1,19 +1,33 @@
 import { useState, useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
-import { RefreshCw, ImageDown, ImagePlus, Download } from "lucide-react";
+import { RefreshCw, ImageDown, ImagePlus, Download, X, GripVertical } from "lucide-react";
 import DropZone from "@/components/DropZone";
 import ProgressBar from "@/components/ProgressBar";
 import OutputCard from "@/components/OutputCard";
 import { imagesToPdf } from "@/lib/pdf-client";
 import { renderAllPagesToBlobs } from "@/lib/pdf-renderer";
 import { formatBytes, arrayBufferToBlob, generateOutputName } from "@/lib/utils";
+import { useToast } from "@/store/toastStore";
 
 type Mode = "pdf-to-image" | "image-to-pdf";
 type ImageFormat = "png" | "jpeg" | "webp";
 
+const FORMAT_MIME: Record<ImageFormat, "image/png" | "image/jpeg" | "image/webp"> = {
+  png: "image/png",
+  jpeg: "image/jpeg",
+  webp: "image/webp",
+};
+
+const FORMAT_EXT: Record<ImageFormat, string> = {
+  png: "png",
+  jpeg: "jpg",
+  webp: "webp",
+};
+
 export default function ConvertPage() {
   const { t } = useTranslation();
+  const toast = useToast();
   const [searchParams] = useSearchParams();
   const [mode, setMode] = useState<Mode>(
     (searchParams.get("mode") as Mode) ?? "pdf-to-image"
@@ -58,24 +72,24 @@ export default function ConvertPage() {
     try {
       const buf = await pdfFile.arrayBuffer();
       setProgress(20);
-      const blobs = await renderAllPagesToBlobs(
-        buf,
-        dpi,
-        format === "jpeg" ? "image/jpeg" : "image/png",
-        format === "jpeg" ? 0.9 : 1
-      );
+      const mime = FORMAT_MIME[format];
+      const quality = format === "png" ? 1 : 0.9;
+      const blobs = await renderAllPagesToBlobs(buf, dpi, mime, quality);
       setProgress(90);
 
+      const ext = FORMAT_EXT[format];
       const outputs = blobs.map((blob, i) => {
         const url = URL.createObjectURL(blob);
-        const ext = format === "jpeg" ? "jpg" : "png";
         const name = pdfFile.name.replace(/\.pdf$/i, `_page${i + 1}.${ext}`);
         return { url, name, size: blob.size };
       });
       setImageOutputs(outputs);
       setProgress(100);
+      toast.success(`Converted ${outputs.length} page${outputs.length !== 1 ? "s" : ""} to ${format.toUpperCase()}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Conversion failed.");
+      const msg = err instanceof Error ? err.message : "Conversion failed.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
@@ -115,8 +129,11 @@ export default function ConvertPage() {
       const name = generateOutputName(imageFiles[0].name, "_converted");
       setPdfOutput({ url, name: name.replace(/\.\w+$/, ".pdf"), size: blob.size });
       setProgress(100);
+      toast.success("Images converted to PDF successfully!");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Conversion failed.");
+      const msg = err instanceof Error ? err.message : "Conversion failed.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setProcessing(false);
     }
@@ -196,6 +213,7 @@ export default function ConvertPage() {
                   >
                     <option value="png">PNG (lossless)</option>
                     <option value="jpeg">JPEG (smaller)</option>
+                    <option value="webp">WebP (modern, small)</option>
                   </select>
                 </div>
                 <div>
@@ -264,13 +282,24 @@ export default function ConvertPage() {
 
               {imageFiles.length > 0 && (
                 <>
-                  <div className="glass rounded-2xl p-3 space-y-2">
+                  <div className="glass rounded-2xl p-3 space-y-1.5">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs text-slate-400">{imageFiles.length} image{imageFiles.length !== 1 ? "s" : ""} — drag to reorder</p>
+                      <button onClick={() => setImageFiles([])} className="text-xs text-slate-500 hover:text-red-400 transition-colors">Clear all</button>
+                    </div>
                     {imageFiles.map((f, i) => (
-                      <div key={i} className="flex items-center gap-2 text-sm">
-                        <span className="text-slate-400 w-5 text-right shrink-0">{i + 1}.</span>
-                        <span className="flex-1 truncate">{f.name}</span>
-                        <span className="text-xs text-slate-500">{formatBytes(f.size)}</span>
-                        <button onClick={() => setImageFiles((p) => p.filter((_, j) => j !== i))} className="text-slate-500 hover:text-red-400">×</button>
+                      <div key={`${f.name}-${i}`} className="flex items-center gap-2 text-sm bg-white/5 rounded-lg px-2 py-1.5">
+                        <GripVertical size={13} className="text-slate-600 shrink-0 cursor-grab" />
+                        <span className="text-slate-500 w-5 text-right shrink-0 text-xs">{i + 1}</span>
+                        <span className="flex-1 truncate text-slate-200">{f.name}</span>
+                        <span className="text-xs text-slate-500 shrink-0">{formatBytes(f.size)}</span>
+                        <button
+                          onClick={() => setImageFiles((p) => p.filter((_, j) => j !== i))}
+                          aria-label={`Remove ${f.name}`}
+                          className="text-slate-500 hover:text-red-400 transition-colors"
+                        >
+                          <X size={13} />
+                        </button>
                       </div>
                     ))}
                   </div>

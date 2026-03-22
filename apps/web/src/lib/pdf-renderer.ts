@@ -90,12 +90,13 @@ export async function generateThumbnails(
 }
 
 /**
- * Render all pages to PNG Blobs (for PDF-to-Image conversion).
+ * Render all pages to image Blobs (for PDF-to-Image conversion).
+ * Supports PNG, JPEG, and WebP (WebP falls back to PNG if browser doesn't support it).
  */
 export async function renderAllPagesToBlobs(
   buffer: ArrayBuffer,
   dpi = 150,
-  format: "image/png" | "image/jpeg" = "image/png",
+  format: "image/png" | "image/jpeg" | "image/webp" = "image/png",
   quality = 0.92
 ): Promise<Blob[]> {
   const scale = dpi / 72; // PDF default is 72 DPI
