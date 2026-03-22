@@ -1,0 +1,69 @@
+{
+  "name": "@pdftwist/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/main.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @pdftwist/web dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "build": "pnpm --filter @pdftwist/web build && electron-builder",
+    "build:win": "pnpm --filter @pdftwist/web build && electron-builder --win",
+    "build:mac": "pnpm --filter @pdftwist/web build && electron-builder --mac",
+    "build:linux": "pnpm --filter @pdftwist/web build && electron-builder --linux",
+    "lint": "eslint src --ext .ts,.js"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "@pdftwist/config": "workspace:*",
+    "concurrently": "^9.1.2",
+    "electron": "^33.2.1",
+    "electron-builder": "^25.1.8",
+    "wait-on": "^8.0.1"
+  },
+  "build": {
+    "appId": "com.twistersecurity.pdftwist",
+    "productName": "PdfTwist",
+    "copyright": "Copyright © 2025 Twister Security",
+    "directories": {
+      "buildResources": "assets",
+      "output": "release"
+    },
+    "files": [
+      "src/**/*",
+      "!src/**/*.ts"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist",
+        "to": "web",
+        "filter": ["**/*"]
+      }
+    ],
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": ["dmg", "zip"],
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.productivity"
+    },
+    "linux": {
+      "target": ["AppImage", "deb"],
+      "icon": "assets/icon.png",
+      "category": "Office"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "techknowledgedev",
+      "repo": "pdftwist"
+    }
+  }
+}

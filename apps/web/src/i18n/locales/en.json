@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "Modern PDF tools. Private. Free. Open Source."
+  },
+  "nav": {
+    "home": "Home",
+    "compress": "Compress",
+    "merge": "Merge",
+    "split": "Split",
+    "pageTools": "Page Tools",
+    "convert": "Convert",
+    "settings": "Settings"
+  },
+  "home": {
+    "hero": "All your PDF tools in one place",
+    "subhero": "Free, private, and open source. Files are processed locally where possible — never stored.",
+    "tools": "Tools"
+  },
+  "tools": {
+    "compress": { "title": "Compress PDF", "desc": "Reduce file size while preserving quality." },
+    "merge": { "title": "Merge PDFs", "desc": "Combine multiple PDFs into one document." },
+    "split": { "title": "Split PDF", "desc": "Extract pages or split by range, bookmarks, or size." },
+    "pageTools": { "title": "Page Tools", "desc": "Rotate, delete, reorder, and extract pages." },
+    "pdfToImage": { "title": "PDF to Image", "desc": "Convert PDF pages to PNG, JPEG, or WebP." },
+    "imageToPdf": { "title": "Image to PDF", "desc": "Combine images into a single PDF document." }
+  },
+  "dropzone": {
+    "title": "Drop PDF files here",
+    "or": "or",
+    "browse": "Browse files",
+    "hint": "Supports PDF files up to {{maxSize}}",
+    "multipleHint": "Drop multiple files to process them together"
+  },
+  "compress": {
+    "title": "Compress PDF",
+    "preset": "Compression preset",
+    "colorDpi": "Color DPI",
+    "grayDpi": "Gray DPI",
+    "monoDpi": "Mono DPI",
+    "jpegQuality": "JPEG Quality",
+    "jpegQualityHint": "Higher = better quality, larger file",
+    "originalSize": "Original",
+    "compressedSize": "Compressed",
+    "savings": "Saved",
+    "compress": "Compress",
+    "compressing": "Compressing…"
+  },
+  "merge": {
+    "title": "Merge PDFs",
+    "addFiles": "Add more files",
+    "fileOrder": "Drag files to reorder",
+    "merge": "Merge",
+    "merging": "Merging…"
+  },
+  "split": {
+    "title": "Split PDF",
+    "mode": {
+      "range": "By page range",
+      "every": "Every N pages",
+      "bookmarks": "By bookmarks",
+      "size": "By file size"
+    },
+    "addRange": "Add range",
+    "from": "From page",
+    "to": "To page",
+    "everyN": "Split every",
+    "pages": "pages",
+    "split": "Split",
+    "splitting": "Splitting…"
+  },
+  "pageTools": {
+    "title": "Page Tools",
+    "selectAll": "Select all",
+    "deselectAll": "Deselect all",
+    "rotate90": "Rotate 90°",
+    "rotate180": "Rotate 180°",
+    "rotateMinus90": "Rotate -90°",
+    "delete": "Delete selected",
+    "extract": "Extract selected",
+    "save": "Save changes",
+    "saving": "Saving…",
+    "pageOf": "Page {{n}} of {{total}}"
+  },
+  "convert": {
+    "title": "Convert",
+    "pdfToImage": "PDF → Image",
+    "imageToPdf": "Images → PDF",
+    "format": "Image format",
+    "dpi": "DPI",
+    "pageSize": "Page size",
+    "margin": "Margin (pt)",
+    "convert": "Convert",
+    "converting": "Converting…",
+    "downloadAll": "Download all (ZIP)"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "language": "Language",
+    "maxFileSize": "Max file size (MB)",
+    "themes": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "common": {
+    "download": "Download",
+    "downloadAll": "Download all",
+    "clear": "Clear",
+    "cancel": "Cancel",
+    "processing": "Processing…",
+    "done": "Done",
+    "error": "An error occurred",
+    "retry": "Try again",
+    "fileSize": "{{size}} MB",
+    "pages": "{{n}} pages",
+    "page": "{{n}} page"
+  },
+  "privacy": {
+    "badge": "Privacy-first",
+    "tooltip": "Browser-processable operations run 100% locally. Server-processed files are deleted within 30 minutes."
+  }
+}

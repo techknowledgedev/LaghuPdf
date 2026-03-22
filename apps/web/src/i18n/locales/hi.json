@@ -1,0 +1,73 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "आधुनिक PDF टूल्स। निजी। मुफ़्त। ओपन सोर्स।"
+  },
+  "nav": {
+    "home": "होम",
+    "compress": "कंप्रेस करें",
+    "merge": "मर्ज करें",
+    "split": "विभाजित करें",
+    "pageTools": "पेज टूल्स",
+    "convert": "कनवर्ट करें",
+    "settings": "सेटिंग्स"
+  },
+  "home": {
+    "hero": "एक ही जगह पर सभी PDF टूल्स",
+    "subhero": "मुफ़्त, निजी और ओपन सोर्स। फ़ाइलें जहाँ संभव हो स्थानीय रूप से प्रोसेस की जाती हैं।",
+    "tools": "टूल्स"
+  },
+  "tools": {
+    "compress": { "title": "PDF कंप्रेस करें", "desc": "गुणवत्ता बनाए रखते हुए फ़ाइल साइज़ कम करें।" },
+    "merge": { "title": "PDFs मर्ज करें", "desc": "कई PDFs को एक दस्तावेज़ में मिलाएं।" },
+    "split": { "title": "PDF विभाजित करें", "desc": "पेज रेंज या बुकमार्क के अनुसार अलग करें।" },
+    "pageTools": { "title": "पेज टूल्स", "desc": "पेज घुमाएं, हटाएं, पुनः क्रमबद्ध करें।" },
+    "pdfToImage": { "title": "PDF से Image", "desc": "PDF पेजों को PNG, JPEG में बदलें।" },
+    "imageToPdf": { "title": "Image से PDF", "desc": "इमेज को एक PDF में जोड़ें।" }
+  },
+  "dropzone": {
+    "title": "PDF फ़ाइलें यहाँ छोड़ें",
+    "or": "या",
+    "browse": "फ़ाइलें ब्राउज़ करें",
+    "hint": "{{maxSize}} तक PDF फ़ाइलें समर्थित",
+    "multipleHint": "एक साथ प्रोसेस करने के लिए कई फ़ाइलें छोड़ें"
+  },
+  "compress": {
+    "title": "PDF कंप्रेस करें",
+    "preset": "कंप्रेशन प्रीसेट",
+    "colorDpi": "रंग DPI",
+    "grayDpi": "ग्रे DPI",
+    "monoDpi": "मोनो DPI",
+    "jpegQuality": "JPEG गुणवत्ता",
+    "jpegQualityHint": "अधिक = बेहतर गुणवत्ता, बड़ी फ़ाइल",
+    "originalSize": "मूल",
+    "compressedSize": "कंप्रेस्ड",
+    "savings": "बचत",
+    "compress": "कंप्रेस करें",
+    "compressing": "कंप्रेस हो रहा है…"
+  },
+  "merge": {
+    "title": "PDFs मर्ज करें",
+    "addFiles": "और फ़ाइलें जोड़ें",
+    "fileOrder": "क्रम बदलने के लिए खींचें",
+    "merge": "मर्ज करें",
+    "merging": "मर्ज हो रहा है…"
+  },
+  "common": {
+    "download": "डाउनलोड करें",
+    "downloadAll": "सभी डाउनलोड करें",
+    "clear": "साफ़ करें",
+    "cancel": "रद्द करें",
+    "processing": "प्रोसेस हो रहा है…",
+    "done": "पूर्ण",
+    "error": "त्रुटि हुई",
+    "retry": "पुनः प्रयास करें",
+    "fileSize": "{{size}} MB",
+    "pages": "{{n}} पेज",
+    "page": "{{n}} पेज"
+  },
+  "privacy": {
+    "badge": "गोपनीयता-प्रथम",
+    "tooltip": "ब्राउज़र में प्रोसेस होने वाले ऑपरेशन 100% स्थानीय रूप से चलते हैं।"
+  }
+}
