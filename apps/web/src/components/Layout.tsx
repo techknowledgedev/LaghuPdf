@@ -6,14 +6,20 @@ import {
   Scissors,
   LayoutGrid,
   RefreshCw,
+  ShieldCheck,
+  Stamp,
+  Hash,
+  FileText,
   Settings,
   Home,
   Shield,
   Zap,
+  MoreHorizontal,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
-const navItems = [
+const mainNavItems = [
   { to: "/", label: "nav.home", icon: Home, end: true },
   { to: "/compress", label: "nav.compress", icon: FileArchive },
   { to: "/merge", label: "nav.merge", icon: GitMerge },
@@ -22,8 +28,16 @@ const navItems = [
   { to: "/convert", label: "nav.convert", icon: RefreshCw },
 ];
 
+const moreNavItems = [
+  { to: "/protect", label: "Protect", icon: ShieldCheck },
+  { to: "/watermark", label: "Watermark", icon: Stamp },
+  { to: "/page-numbers", label: "Page #", icon: Hash },
+  { to: "/metadata", label: "Metadata", icon: FileText },
+];
+
 export default function Layout() {
   const { t } = useTranslation();
+  const [moreOpen, setMoreOpen] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -40,7 +54,7 @@ export default function Layout() {
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
-            {navItems.map(({ to, label, icon: Icon, end }) => (
+            {mainNavItems.map(({ to, label, icon: Icon, end }) => (
               <NavLink
                 key={to}
                 to={to}
@@ -58,6 +72,45 @@ export default function Layout() {
                 {t(label)}
               </NavLink>
             ))}
+
+            {/* More dropdown */}
+            <div className="relative">
+              <button
+                onClick={() => setMoreOpen(!moreOpen)}
+                onBlur={() => setTimeout(() => setMoreOpen(false), 150)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all",
+                  moreOpen
+                    ? "bg-indigo-500/20 text-indigo-300"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-white/5"
+                )}
+              >
+                <MoreHorizontal size={14} />
+                More
+              </button>
+              {moreOpen && (
+                <div className="absolute top-full right-0 mt-1 w-44 glass rounded-xl border border-indigo-500/20 py-1 shadow-xl z-50">
+                  {moreNavItems.map(({ to, label, icon: Icon }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      onClick={() => setMoreOpen(false)}
+                      className={({ isActive }) =>
+                        cn(
+                          "flex items-center gap-2 px-3 py-2 text-sm transition-all",
+                          isActive
+                            ? "text-indigo-300 bg-indigo-500/10"
+                            : "text-slate-300 hover:bg-white/5"
+                        )
+                      }
+                    >
+                      <Icon size={14} />
+                      {label}
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           {/* Right side */}
@@ -87,7 +140,7 @@ export default function Layout() {
 
         {/* Mobile nav */}
         <nav className="md:hidden flex overflow-x-auto border-t border-white/5 px-2 pb-1">
-          {navItems.map(({ to, label, icon: Icon, end }) => (
+          {([...mainNavItems, ...moreNavItems] as { to: string; label: string; icon: typeof Home; end?: boolean }[]).map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
@@ -102,7 +155,7 @@ export default function Layout() {
               }
             >
               <Icon size={16} />
-              {t(label)}
+              {typeof label === "string" && label.startsWith("nav.") ? t(label) : label}
             </NavLink>
           ))}
         </nav>

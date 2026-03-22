@@ -23,7 +23,11 @@
     "split": { "title": "Split PDF", "desc": "Extract pages or split by range, bookmarks, or size." },
     "pageTools": { "title": "Page Tools", "desc": "Rotate, delete, reorder, and extract pages." },
     "pdfToImage": { "title": "PDF to Image", "desc": "Convert PDF pages to PNG, JPEG, or WebP." },
-    "imageToPdf": { "title": "Image to PDF", "desc": "Combine images into a single PDF document." }
+    "imageToPdf": { "title": "Image to PDF", "desc": "Combine images into a single PDF document." },
+    "protect": { "title": "Protect PDF", "desc": "Add password protection and encryption to PDFs." },
+    "watermark": { "title": "Watermark", "desc": "Add text or image watermarks to PDF pages." },
+    "pageNumbers": { "title": "Page Numbers", "desc": "Add page numbers with custom formatting." },
+    "metadata": { "title": "Metadata", "desc": "View and edit PDF document properties." }
   },
   "dropzone": {
     "title": "Drop PDF files here",

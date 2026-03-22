@@ -23,7 +23,11 @@
     "split": { "title": "PDF विभाजित करें", "desc": "पेज रेंज या बुकमार्क के अनुसार अलग करें।" },
     "pageTools": { "title": "पेज टूल्स", "desc": "पेज घुमाएं, हटाएं, पुनः क्रमबद्ध करें।" },
     "pdfToImage": { "title": "PDF से Image", "desc": "PDF पेजों को PNG, JPEG में बदलें।" },
-    "imageToPdf": { "title": "Image से PDF", "desc": "इमेज को एक PDF में जोड़ें।" }
+    "imageToPdf": { "title": "Image से PDF", "desc": "इमेज को एक PDF में जोड़ें।" },
+    "protect": { "title": "PDF सुरक्षित करें", "desc": "PDF में पासवर्ड सुरक्षा और एन्क्रिप्शन जोड़ें।" },
+    "watermark": { "title": "वॉटरमार्क", "desc": "PDF पेजों पर टेक्स्ट या इमेज वॉटरमार्क जोड़ें।" },
+    "pageNumbers": { "title": "पेज नंबर", "desc": "कस्टम फ़ॉर्मेटिंग के साथ पेज नंबर जोड़ें।" },
+    "metadata": { "title": "मेटाडेटा", "desc": "PDF दस्तावेज़ गुण देखें और संपादित करें।" }
   },
   "dropzone": {
     "title": "PDF फ़ाइलें यहाँ छोड़ें",

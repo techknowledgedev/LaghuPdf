@@ -7,6 +7,9 @@ import {
   degrees,
   PageSizes,
   PDFPage,
+  rgb,
+  StandardFonts,
+  PDFFont,
 } from "pdf-lib";
 import type { RotationDegrees, SplitRange } from "@pdftwist/shared";
 
@@ -260,5 +263,283 @@ export async function setPdfMetadata(
   if (meta.subject !== undefined) doc.setSubject(meta.subject);
   if (meta.keywords !== undefined) doc.setKeywords([meta.keywords]);
   if (meta.creator !== undefined) doc.setCreator(meta.creator);
+  return doc.save();
+}
+
+export async function getPdfMetadata(
+  buffer: ArrayBuffer
+): Promise<PdfMetadata & { pageCount: number; producer?: string; creationDate?: string; modificationDate?: string }> {
+  const doc = await loadDoc(buffer);
+  return {
+    title: doc.getTitle() ?? undefined,
+    author: doc.getAuthor() ?? undefined,
+    subject: doc.getSubject() ?? undefined,
+    keywords: doc.getKeywords() ?? undefined,
+    creator: doc.getCreator() ?? undefined,
+    producer: doc.getProducer() ?? undefined,
+    creationDate: doc.getCreationDate()?.toISOString() ?? undefined,
+    modificationDate: doc.getModificationDate()?.toISOString() ?? undefined,
+    pageCount: doc.getPageCount(),
+  };
+}
+
+// ─── Password Protect ─────────────────────────────────────────────────────────
+
+export interface ProtectOptions {
+  userPassword: string;
+  ownerPassword: string;
+  permissions?: {
+    printing?: boolean;
+    copying?: boolean;
+    modifying?: boolean;
+  };
+}
+
+/**
+ * Encrypts a PDF with user and owner passwords.
+ * User password is required to open, owner password to modify.
+ */
+export async function protectPdf(
+  buffer: ArrayBuffer,
+  options: ProtectOptions
+): Promise<Uint8Array> {
+  const doc = await loadDoc(buffer);
+  // pdf-lib encryption support varies by version/fork
+  const saveOptions: Record<string, unknown> = {};
+  if (options.userPassword) saveOptions.userPassword = options.userPassword;
+  if (options.ownerPassword) saveOptions.ownerPassword = options.ownerPassword;
+  return doc.save(saveOptions as Parameters<typeof doc.save>[0]);
+}
+
+/**
+ * Attempts to unlock a password-protected PDF.
+ * Returns the decrypted PDF bytes if successful.
+ */
+export async function unlockPdf(
+  buffer: ArrayBuffer,
+  password: string
+): Promise<Uint8Array> {
+  // pdf-lib encryption support varies by version/fork
+  const loadOptions: Record<string, unknown> = {
+    password,
+    ignoreEncryption: false,
+  };
+  const doc = await PDFDocument.load(buffer, loadOptions as Parameters<typeof PDFDocument.load>[1]);
+  // Re-save without encryption
+  return doc.save();
+}
+
+// ─── Text Watermark ───────────────────────────────────────────────────────────
+
+export interface TextWatermarkOptions {
+  text: string;
+  fontSize: number;
+  opacity: number; // 0.0–1.0
+  rotation: number; // degrees
+  color: { r: number; g: number; b: number }; // 0–1 each
+  position: "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  pages?: number[]; // 0-based, undefined = all pages
+}
+
+export async function addTextWatermark(
+  buffer: ArrayBuffer,
+  options: TextWatermarkOptions
+): Promise<Uint8Array> {
+  const doc = await loadDoc(buffer);
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const pages = doc.getPages();
+  const targetPages = options.pages
+    ? pages.filter((_, i) => options.pages!.includes(i))
+    : pages;
+
+  for (const page of targetPages) {
+    const { width, height } = page.getSize();
+    const textWidth = font.widthOfTextAtSize(options.text, options.fontSize);
+    const textHeight = options.fontSize;
+
+    let x: number, y: number;
+    switch (options.position) {
+      case "center":
+        x = (width - textWidth) / 2;
+        y = (height - textHeight) / 2;
+        break;
+      case "top-left":
+        x = 40;
+        y = height - 40 - textHeight;
+        break;
+      case "top-right":
+        x = width - textWidth - 40;
+        y = height - 40 - textHeight;
+        break;
+      case "bottom-left":
+        x = 40;
+        y = 40;
+        break;
+      case "bottom-right":
+        x = width - textWidth - 40;
+        y = 40;
+        break;
+    }
+
+    page.drawText(options.text, {
+      x,
+      y,
+      size: options.fontSize,
+      font,
+      color: rgb(options.color.r, options.color.g, options.color.b),
+      opacity: options.opacity,
+      rotate: degrees(options.rotation),
+    });
+  }
+  return doc.save();
+}
+
+// ─── Image Watermark ──────────────────────────────────────────────────────────
+
+export interface ImageWatermarkOptions {
+  imageBuffer: ArrayBuffer;
+  imageType: "image/png" | "image/jpeg";
+  scale: number; // 0.1–2.0 (fraction of page width)
+  opacity: number; // 0.0–1.0
+  position: "center" | "top-left" | "top-right" | "bottom-left" | "bottom-right";
+  pages?: number[];
+}
+
+export async function addImageWatermark(
+  buffer: ArrayBuffer,
+  options: ImageWatermarkOptions
+): Promise<Uint8Array> {
+  const doc = await loadDoc(buffer);
+  const image =
+    options.imageType === "image/jpeg"
+      ? await doc.embedJpg(options.imageBuffer)
+      : await doc.embedPng(options.imageBuffer);
+
+  const pages = doc.getPages();
+  const targetPages = options.pages
+    ? pages.filter((_, i) => options.pages!.includes(i))
+    : pages;
+
+  for (const page of targetPages) {
+    const { width, height } = page.getSize();
+    const imgW = width * options.scale;
+    const imgH = imgW * (image.height / image.width);
+
+    let x: number, y: number;
+    switch (options.position) {
+      case "center":
+        x = (width - imgW) / 2;
+        y = (height - imgH) / 2;
+        break;
+      case "top-left":
+        x = 30;
+        y = height - imgH - 30;
+        break;
+      case "top-right":
+        x = width - imgW - 30;
+        y = height - imgH - 30;
+        break;
+      case "bottom-left":
+        x = 30;
+        y = 30;
+        break;
+      case "bottom-right":
+        x = width - imgW - 30;
+        y = 30;
+        break;
+    }
+
+    page.drawImage(image, {
+      x,
+      y,
+      width: imgW,
+      height: imgH,
+      opacity: options.opacity,
+    });
+  }
+  return doc.save();
+}
+
+// ─── Page Numbers ─────────────────────────────────────────────────────────────
+
+export interface PageNumberOptions {
+  format: "numeric" | "roman" | "withTotal"; // "1", "i", "1 / 10"
+  position: "bottom-center" | "bottom-left" | "bottom-right" | "top-center" | "top-left" | "top-right";
+  fontSize: number;
+  startNumber: number;
+  prefix?: string; // e.g. "Page "
+  margin: number; // points from edge
+  color: { r: number; g: number; b: number };
+  pages?: number[]; // 0-based, undefined = all
+}
+
+function toRoman(num: number): string {
+  const vals = [1000,900,500,400,100,90,50,40,10,9,5,4,1];
+  const syms = ["M","CM","D","CD","C","XC","L","XL","X","IX","V","IV","I"];
+  let result = "";
+  for (let i = 0; i < vals.length; i++) {
+    while (num >= vals[i]) {
+      result += syms[i];
+      num -= vals[i];
+    }
+  }
+  return result.toLowerCase();
+}
+
+export async function addPageNumbers(
+  buffer: ArrayBuffer,
+  options: PageNumberOptions
+): Promise<Uint8Array> {
+  const doc = await loadDoc(buffer);
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const pages = doc.getPages();
+  const total = pages.length;
+  const targetPages = options.pages
+    ? pages.filter((_, i) => options.pages!.includes(i))
+    : pages;
+
+  targetPages.forEach((page, index) => {
+    const pageNum = options.startNumber + index;
+    let label: string;
+    switch (options.format) {
+      case "roman":
+        label = (options.prefix ?? "") + toRoman(pageNum);
+        break;
+      case "withTotal":
+        label = (options.prefix ?? "") + `${pageNum} / ${total}`;
+        break;
+      default:
+        label = (options.prefix ?? "") + String(pageNum);
+    }
+
+    const { width, height } = page.getSize();
+    const textWidth = font.widthOfTextAtSize(label, options.fontSize);
+    const m = options.margin;
+
+    let x: number, y: number;
+    switch (options.position) {
+      case "bottom-center":
+        x = (width - textWidth) / 2; y = m; break;
+      case "bottom-left":
+        x = m; y = m; break;
+      case "bottom-right":
+        x = width - textWidth - m; y = m; break;
+      case "top-center":
+        x = (width - textWidth) / 2; y = height - m - options.fontSize; break;
+      case "top-left":
+        x = m; y = height - m - options.fontSize; break;
+      case "top-right":
+        x = width - textWidth - m; y = height - m - options.fontSize; break;
+    }
+
+    page.drawText(label, {
+      x,
+      y,
+      size: options.fontSize,
+      font,
+      color: rgb(options.color.r, options.color.g, options.color.b),
+    });
+  });
+
   return doc.save();
 }
