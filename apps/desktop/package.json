@@ -9,7 +9,7 @@
     "build:win": "pnpm --filter @pdftwist/web build && electron-builder --win",
     "build:mac": "pnpm --filter @pdftwist/web build && electron-builder --mac",
     "build:linux": "pnpm --filter @pdftwist/web build && electron-builder --linux",
-    "lint": "eslint src --ext .ts,.js"
+    "lint": "eslint src"
   },
   "dependencies": {
     "electron-updater": "^6.3.9"
