@@ -1,0 +1,137 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "モダンな PDF ツール。プライベート。無料。オープンソース。"
+  },
+  "nav": {
+    "home": "ホーム",
+    "compress": "圧縮",
+    "merge": "結合",
+    "split": "分割",
+    "pageTools": "ページツール",
+    "convert": "変換",
+    "protect": "保護",
+    "watermark": "透かし",
+    "pageNumbers": "ページ番号",
+    "metadata": "メタデータ",
+    "annotate": "注釈",
+    "redact": "墨消し",
+    "settings": "設定"
+  },
+  "home": {
+    "hero": "すべての PDF ツールを一か所に",
+    "subhero": "無料、プライベート、オープンソース。ファイルは可能な限りローカルで処理され、保存されることはありません。",
+    "tools": "ツール"
+  },
+  "tools": {
+    "compress": { "title": "PDF を圧縮", "desc": "品質を維持しながらファイルサイズを削減します。" },
+    "merge": { "title": "PDF を結合", "desc": "複数の PDF を 1 つのドキュメントに結合します。" },
+    "split": { "title": "PDF を分割", "desc": "ページの抽出、範囲・ブックマーク・サイズによる分割。" },
+    "pageTools": { "title": "ページツール", "desc": "ページの回転、削除、並べ替え、抽出。" },
+    "pdfToImage": { "title": "PDF を画像に変換", "desc": "PDF ページを PNG、JPEG、WebP に変換します。" },
+    "imageToPdf": { "title": "画像を PDF に変換", "desc": "複数の画像を 1 つの PDF ドキュメントにまとめます。" },
+    "protect": { "title": "PDF を保護", "desc": "PDF にパスワード保護と暗号化を追加します。" },
+    "watermark": { "title": "透かし", "desc": "PDF ページにテキストまたは画像の透かしを追加します。" },
+    "pageNumbers": { "title": "ページ番号", "desc": "カスタム書式でページ番号を追加します。" },
+    "metadata": { "title": "メタデータ", "desc": "PDF ドキュメントのプロパティを表示・編集します。" },
+    "annotate": { "title": "PDF に注釈", "desc": "テキスト、ハイライト、図形、描画を追加します。" },
+    "redact": { "title": "PDF を墨消し", "desc": "PDF 内の機密情報を墨消しします。" }
+  },
+  "dropzone": {
+    "title": "PDF ファイルをここにドロップ",
+    "or": "または",
+    "browse": "ファイルを選択",
+    "hint": "最大 {{maxSize}} の PDF ファイルに対応",
+    "multipleHint": "複数のファイルをドロップしてまとめて処理"
+  },
+  "compress": {
+    "title": "PDF を圧縮",
+    "preset": "圧縮プリセット",
+    "colorDpi": "カラー DPI",
+    "grayDpi": "グレー DPI",
+    "monoDpi": "モノクロ DPI",
+    "jpegQuality": "JPEG 品質",
+    "jpegQualityHint": "高い = 高品質、大きいファイル",
+    "originalSize": "元のサイズ",
+    "compressedSize": "圧縮後",
+    "savings": "削減",
+    "compress": "圧縮",
+    "compressing": "圧縮中…"
+  },
+  "merge": {
+    "title": "PDF を結合",
+    "addFiles": "ファイルを追加",
+    "fileOrder": "ファイルをドラッグして並べ替え",
+    "merge": "結合",
+    "merging": "結合中…"
+  },
+  "split": {
+    "title": "PDF を分割",
+    "mode": {
+      "range": "ページ範囲で",
+      "every": "N ページごと",
+      "bookmarks": "ブックマークで",
+      "size": "ファイルサイズで"
+    },
+    "addRange": "範囲を追加",
+    "from": "開始ページ",
+    "to": "終了ページ",
+    "everyN": "分割間隔",
+    "pages": "ページ",
+    "split": "分割",
+    "splitting": "分割中…"
+  },
+  "pageTools": {
+    "title": "ページツール",
+    "selectAll": "すべて選択",
+    "deselectAll": "すべて解除",
+    "rotate90": "90° 回転",
+    "rotate180": "180° 回転",
+    "rotateMinus90": "-90° 回転",
+    "delete": "選択を削除",
+    "extract": "選択を抽出",
+    "save": "変更を保存",
+    "saving": "保存中…",
+    "pageOf": "{{n}} / {{total}} ページ"
+  },
+  "convert": {
+    "title": "変換",
+    "pdfToImage": "PDF → 画像",
+    "imageToPdf": "画像 → PDF",
+    "format": "画像形式",
+    "dpi": "DPI",
+    "pageSize": "ページサイズ",
+    "margin": "余白 (pt)",
+    "convert": "変換",
+    "converting": "変換中…",
+    "downloadAll": "すべてダウンロード (ZIP)"
+  },
+  "settings": {
+    "title": "設定",
+    "theme": "テーマ",
+    "language": "言語",
+    "maxFileSize": "最大ファイルサイズ (MB)",
+    "themes": {
+      "light": "ライト",
+      "dark": "ダーク",
+      "system": "システム"
+    }
+  },
+  "common": {
+    "download": "ダウンロード",
+    "downloadAll": "すべてダウンロード",
+    "clear": "クリア",
+    "cancel": "キャンセル",
+    "processing": "処理中…",
+    "done": "完了",
+    "error": "エラーが発生しました",
+    "retry": "再試行",
+    "fileSize": "{{size}} MB",
+    "pages": "{{n}} ページ",
+    "page": "{{n}} ページ"
+  },
+  "privacy": {
+    "badge": "プライバシー優先",
+    "tooltip": "ブラウザで処理可能な操作は 100% ローカルで実行されます。サーバーで処理されたファイルは 30 分以内に削除されます。"
+  }
+}

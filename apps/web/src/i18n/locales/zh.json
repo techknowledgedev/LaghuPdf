@@ -1,0 +1,137 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "现代 PDF 工具。私密。免费。开源。"
+  },
+  "nav": {
+    "home": "首页",
+    "compress": "压缩",
+    "merge": "合并",
+    "split": "拆分",
+    "pageTools": "页面工具",
+    "convert": "转换",
+    "protect": "保护",
+    "watermark": "水印",
+    "pageNumbers": "页码",
+    "metadata": "元数据",
+    "annotate": "注释",
+    "redact": "涂黑",
+    "settings": "设置"
+  },
+  "home": {
+    "hero": "所有 PDF 工具集于一处",
+    "subhero": "免费、私密且开源。文件尽可能在本地处理——绝不存储。",
+    "tools": "工具"
+  },
+  "tools": {
+    "compress": { "title": "压缩 PDF", "desc": "在保持质量的同时减小文件大小。" },
+    "merge": { "title": "合并 PDF", "desc": "将多个 PDF 合并为一个文档。" },
+    "split": { "title": "拆分 PDF", "desc": "按页面范围、书签或大小提取页面或拆分。" },
+    "pageTools": { "title": "页面工具", "desc": "旋转、删除、重新排序和提取页面。" },
+    "pdfToImage": { "title": "PDF 转图片", "desc": "将 PDF 页面转换为 PNG、JPEG 或 WebP。" },
+    "imageToPdf": { "title": "图片转 PDF", "desc": "将多张图片合并为单个 PDF 文档。" },
+    "protect": { "title": "保护 PDF", "desc": "为 PDF 添加密码保护和加密。" },
+    "watermark": { "title": "水印", "desc": "在 PDF 页面上添加文字或图片水印。" },
+    "pageNumbers": { "title": "页码", "desc": "添加自定义格式的页码。" },
+    "metadata": { "title": "元数据", "desc": "查看和编辑 PDF 文档属性。" },
+    "annotate": { "title": "注释 PDF", "desc": "添加文字、高亮、形状和绘图。" },
+    "redact": { "title": "涂黑 PDF", "desc": "涂黑 PDF 中的敏感内容。" }
+  },
+  "dropzone": {
+    "title": "将 PDF 文件拖放到此处",
+    "or": "或",
+    "browse": "浏览文件",
+    "hint": "支持最大 {{maxSize}} 的 PDF 文件",
+    "multipleHint": "拖放多个文件以一起处理"
+  },
+  "compress": {
+    "title": "压缩 PDF",
+    "preset": "压缩预设",
+    "colorDpi": "彩色 DPI",
+    "grayDpi": "灰度 DPI",
+    "monoDpi": "黑白 DPI",
+    "jpegQuality": "JPEG 质量",
+    "jpegQualityHint": "越高 = 质量越好，文件越大",
+    "originalSize": "原始大小",
+    "compressedSize": "压缩后",
+    "savings": "已节省",
+    "compress": "压缩",
+    "compressing": "压缩中…"
+  },
+  "merge": {
+    "title": "合并 PDF",
+    "addFiles": "添加更多文件",
+    "fileOrder": "拖动文件以重新排序",
+    "merge": "合并",
+    "merging": "合并中…"
+  },
+  "split": {
+    "title": "拆分 PDF",
+    "mode": {
+      "range": "按页面范围",
+      "every": "每 N 页",
+      "bookmarks": "按书签",
+      "size": "按文件大小"
+    },
+    "addRange": "添加范围",
+    "from": "起始页",
+    "to": "结束页",
+    "everyN": "每隔",
+    "pages": "页",
+    "split": "拆分",
+    "splitting": "拆分中…"
+  },
+  "pageTools": {
+    "title": "页面工具",
+    "selectAll": "全选",
+    "deselectAll": "取消全选",
+    "rotate90": "旋转 90°",
+    "rotate180": "旋转 180°",
+    "rotateMinus90": "旋转 -90°",
+    "delete": "删除所选",
+    "extract": "提取所选",
+    "save": "保存更改",
+    "saving": "保存中…",
+    "pageOf": "第 {{n}} 页，共 {{total}} 页"
+  },
+  "convert": {
+    "title": "转换",
+    "pdfToImage": "PDF → 图片",
+    "imageToPdf": "图片 → PDF",
+    "format": "图片格式",
+    "dpi": "DPI",
+    "pageSize": "页面大小",
+    "margin": "边距 (pt)",
+    "convert": "转换",
+    "converting": "转换中…",
+    "downloadAll": "全部下载 (ZIP)"
+  },
+  "settings": {
+    "title": "设置",
+    "theme": "主题",
+    "language": "语言",
+    "maxFileSize": "最大文件大小 (MB)",
+    "themes": {
+      "light": "浅色",
+      "dark": "深色",
+      "system": "跟随系统"
+    }
+  },
+  "common": {
+    "download": "下载",
+    "downloadAll": "全部下载",
+    "clear": "清除",
+    "cancel": "取消",
+    "processing": "处理中…",
+    "done": "完成",
+    "error": "发生错误",
+    "retry": "重试",
+    "fileSize": "{{size}} MB",
+    "pages": "{{n}} 页",
+    "page": "{{n}} 页"
+  },
+  "privacy": {
+    "badge": "隐私优先",
+    "tooltip": "可在浏览器中处理的操作 100% 在本地运行。服务器处理的文件将在 30 分钟内删除。"
+  }
+}

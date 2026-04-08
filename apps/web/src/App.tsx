@@ -14,6 +14,8 @@ import ProtectPage from "@/pages/ProtectPage";
 import WatermarkPage from "@/pages/WatermarkPage";
 import PageNumbersPage from "@/pages/PageNumbersPage";
 import MetadataPage from "@/pages/MetadataPage";
+import AnnotatePage from "@/pages/AnnotatePage";
+import RedactPage from "@/pages/RedactPage";
 import SettingsPage from "@/pages/SettingsPage";
 
 export default function App() {
@@ -42,6 +44,8 @@ export default function App() {
             <Route path="watermark" element={<WatermarkPage />} />
             <Route path="page-numbers" element={<PageNumbersPage />} />
             <Route path="metadata" element={<MetadataPage />} />
+            <Route path="annotate" element={<AnnotatePage />} />
+            <Route path="redact" element={<RedactPage />} />
             <Route path="settings" element={<SettingsPage />} />
           </Route>
         </Routes>

@@ -1,0 +1,137 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "Ferramentas PDF modernas. Privado. Gratuito. Código aberto."
+  },
+  "nav": {
+    "home": "Início",
+    "compress": "Comprimir",
+    "merge": "Mesclar",
+    "split": "Dividir",
+    "pageTools": "Ferramentas de página",
+    "convert": "Converter",
+    "protect": "Proteger",
+    "watermark": "Marca d'água",
+    "pageNumbers": "Numeração",
+    "metadata": "Metadados",
+    "annotate": "Anotar",
+    "redact": "Tarjar",
+    "settings": "Configurações"
+  },
+  "home": {
+    "hero": "Todas as ferramentas PDF em um só lugar",
+    "subhero": "Gratuito, privado e de código aberto. Os arquivos são processados localmente sempre que possível — nunca armazenados.",
+    "tools": "Ferramentas"
+  },
+  "tools": {
+    "compress": { "title": "Comprimir PDF", "desc": "Reduza o tamanho do arquivo mantendo a qualidade." },
+    "merge": { "title": "Mesclar PDFs", "desc": "Combine vários PDFs em um único documento." },
+    "split": { "title": "Dividir PDF", "desc": "Extraia páginas ou divida por intervalo, marcadores ou tamanho." },
+    "pageTools": { "title": "Ferramentas de página", "desc": "Gire, exclua, reordene e extraia páginas." },
+    "pdfToImage": { "title": "PDF para imagem", "desc": "Converta páginas PDF em PNG, JPEG ou WebP." },
+    "imageToPdf": { "title": "Imagem para PDF", "desc": "Combine imagens em um único documento PDF." },
+    "protect": { "title": "Proteger PDF", "desc": "Adicione proteção por senha e criptografia aos PDFs." },
+    "watermark": { "title": "Marca d'água", "desc": "Adicione marcas d'água de texto ou imagem às páginas PDF." },
+    "pageNumbers": { "title": "Numeração de páginas", "desc": "Adicione números de página com formatação personalizada." },
+    "metadata": { "title": "Metadados", "desc": "Visualize e edite as propriedades do documento PDF." },
+    "annotate": { "title": "Anotar PDF", "desc": "Adicione texto, destaques, formas e desenhos." },
+    "redact": { "title": "Tarjar PDF", "desc": "Oculte conteúdo sensível no seu PDF." }
+  },
+  "dropzone": {
+    "title": "Solte arquivos PDF aqui",
+    "or": "ou",
+    "browse": "Procurar arquivos",
+    "hint": "Suporta arquivos PDF de até {{maxSize}}",
+    "multipleHint": "Solte vários arquivos para processá-los juntos"
+  },
+  "compress": {
+    "title": "Comprimir PDF",
+    "preset": "Predefinição de compressão",
+    "colorDpi": "DPI colorido",
+    "grayDpi": "DPI cinza",
+    "monoDpi": "DPI mono",
+    "jpegQuality": "Qualidade JPEG",
+    "jpegQualityHint": "Maior = melhor qualidade, arquivo maior",
+    "originalSize": "Original",
+    "compressedSize": "Comprimido",
+    "savings": "Economizado",
+    "compress": "Comprimir",
+    "compressing": "Comprimindo…"
+  },
+  "merge": {
+    "title": "Mesclar PDFs",
+    "addFiles": "Adicionar mais arquivos",
+    "fileOrder": "Arraste os arquivos para reordenar",
+    "merge": "Mesclar",
+    "merging": "Mesclando…"
+  },
+  "split": {
+    "title": "Dividir PDF",
+    "mode": {
+      "range": "Por intervalo de páginas",
+      "every": "A cada N páginas",
+      "bookmarks": "Por marcadores",
+      "size": "Por tamanho de arquivo"
+    },
+    "addRange": "Adicionar intervalo",
+    "from": "Da página",
+    "to": "Até a página",
+    "everyN": "Dividir a cada",
+    "pages": "páginas",
+    "split": "Dividir",
+    "splitting": "Dividindo…"
+  },
+  "pageTools": {
+    "title": "Ferramentas de página",
+    "selectAll": "Selecionar tudo",
+    "deselectAll": "Desmarcar tudo",
+    "rotate90": "Girar 90°",
+    "rotate180": "Girar 180°",
+    "rotateMinus90": "Girar -90°",
+    "delete": "Excluir selecionados",
+    "extract": "Extrair selecionados",
+    "save": "Salvar alterações",
+    "saving": "Salvando…",
+    "pageOf": "Página {{n}} de {{total}}"
+  },
+  "convert": {
+    "title": "Converter",
+    "pdfToImage": "PDF → Imagem",
+    "imageToPdf": "Imagens → PDF",
+    "format": "Formato de imagem",
+    "dpi": "DPI",
+    "pageSize": "Tamanho da página",
+    "margin": "Margem (pt)",
+    "convert": "Converter",
+    "converting": "Convertendo…",
+    "downloadAll": "Baixar tudo (ZIP)"
+  },
+  "settings": {
+    "title": "Configurações",
+    "theme": "Tema",
+    "language": "Idioma",
+    "maxFileSize": "Tamanho máximo do arquivo (MB)",
+    "themes": {
+      "light": "Claro",
+      "dark": "Escuro",
+      "system": "Sistema"
+    }
+  },
+  "common": {
+    "download": "Baixar",
+    "downloadAll": "Baixar tudo",
+    "clear": "Limpar",
+    "cancel": "Cancelar",
+    "processing": "Processando…",
+    "done": "Concluído",
+    "error": "Ocorreu um erro",
+    "retry": "Tentar novamente",
+    "fileSize": "{{size}} MB",
+    "pages": "{{n}} páginas",
+    "page": "{{n}} página"
+  },
+  "privacy": {
+    "badge": "Privacidade em primeiro lugar",
+    "tooltip": "Operações processáveis no navegador são executadas 100% localmente. Arquivos processados no servidor são excluídos em até 30 minutos."
+  }
+}

@@ -11,6 +11,8 @@ import {
   Stamp,
   Hash,
   FileText,
+  PenLine,
+  EyeOff,
   Shield,
   Zap,
   Globe,
@@ -107,6 +109,24 @@ const tools = [
     gradient: "from-purple-500 to-violet-600",
     bg: "bg-purple-500/10 hover:bg-purple-500/20",
     border: "border-purple-500/20 hover:border-purple-400/40",
+  },
+  {
+    to: "/annotate",
+    icon: PenLine,
+    label: "tools.annotate.title",
+    desc: "tools.annotate.desc",
+    gradient: "from-rose-500 to-pink-600",
+    bg: "bg-rose-500/10 hover:bg-rose-500/20",
+    border: "border-rose-500/20 hover:border-rose-400/40",
+  },
+  {
+    to: "/redact",
+    icon: EyeOff,
+    label: "tools.redact.title",
+    desc: "tools.redact.desc",
+    gradient: "from-red-600 to-red-800",
+    bg: "bg-red-600/10 hover:bg-red-600/20",
+    border: "border-red-600/20 hover:border-red-500/40",
   },
 ];
 

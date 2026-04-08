@@ -10,6 +10,8 @@ import {
   rgb,
   StandardFonts,
   PDFFont,
+  grayscale,
+  LineCapStyle,
 } from "pdf-lib";
 import type { RotationDegrees, SplitRange } from "@pdftwist/shared";
 
@@ -540,6 +542,193 @@ export async function addPageNumbers(
       color: rgb(options.color.r, options.color.g, options.color.b),
     });
   });
+
+  return doc.save();
+}
+
+// ─── Annotations ──────────────────────────────────────────────────────────────
+
+/**
+ * Annotation stored using fractional (0-1) coordinates of page dimensions.
+ * This ensures annotations are resolution-independent.
+ */
+export interface PdfAnnotation {
+  id: string;
+  type: "text" | "highlight" | "rectangle" | "circle" | "line" | "freehand";
+  pageIndex: number;
+  x: number;
+  y: number;
+  width?: number;
+  height?: number;
+  text?: string;
+  fontSize?: number;
+  color: { r: number; g: number; b: number };
+  opacity: number;
+  lineWidth?: number;
+  filled?: boolean;
+  points?: { x: number; y: number }[];
+  endX?: number;
+  endY?: number;
+}
+
+/**
+ * Applies annotations to PDF pages and returns the annotated PDF.
+ */
+export async function applyAnnotations(
+  buffer: ArrayBuffer,
+  annotations: PdfAnnotation[]
+): Promise<Uint8Array> {
+  const doc = await loadDoc(buffer);
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const pages = doc.getPages();
+
+  for (const ann of annotations) {
+    const page = pages[ann.pageIndex];
+    if (!page) continue;
+
+    const { width: pw, height: ph } = page.getSize();
+    const x = ann.x * pw;
+    const y = ph - ann.y * ph;
+    const c = rgb(ann.color.r, ann.color.g, ann.color.b);
+
+    switch (ann.type) {
+      case "text": {
+        const fs = ann.fontSize ?? 14;
+        page.drawText(ann.text ?? "", {
+          x,
+          y: y - fs,
+          size: fs,
+          font,
+          color: c,
+          opacity: ann.opacity,
+        });
+        break;
+      }
+      case "highlight": {
+        const w = (ann.width ?? 0) * pw;
+        const h = (ann.height ?? 0) * ph;
+        page.drawRectangle({
+          x,
+          y: y - h,
+          width: w,
+          height: h,
+          color: c,
+          opacity: ann.opacity * 0.35,
+          borderWidth: 0,
+        });
+        break;
+      }
+      case "rectangle": {
+        const w = (ann.width ?? 0) * pw;
+        const h = (ann.height ?? 0) * ph;
+        if (ann.filled) {
+          page.drawRectangle({
+            x,
+            y: y - h,
+            width: w,
+            height: h,
+            color: c,
+            opacity: ann.opacity,
+            borderWidth: 0,
+          });
+        } else {
+          page.drawRectangle({
+            x,
+            y: y - h,
+            width: w,
+            height: h,
+            borderColor: c,
+            borderWidth: ann.lineWidth ?? 2,
+            opacity: ann.opacity,
+          });
+        }
+        break;
+      }
+      case "circle": {
+        const w = (ann.width ?? 0) * pw;
+        const h = (ann.height ?? 0) * ph;
+        const rx = w / 2;
+        const ry = h / 2;
+        page.drawEllipse({
+          x: x + rx,
+          y: y - ry,
+          xScale: rx,
+          yScale: ry,
+          borderColor: c,
+          borderWidth: ann.lineWidth ?? 2,
+          opacity: ann.opacity,
+        });
+        break;
+      }
+      case "line": {
+        page.drawLine({
+          start: { x, y },
+          end: { x: (ann.endX ?? 0) * pw, y: ph - (ann.endY ?? 0) * ph },
+          thickness: ann.lineWidth ?? 2,
+          color: c,
+          opacity: ann.opacity,
+        });
+        break;
+      }
+      case "freehand": {
+        if (!ann.points || ann.points.length < 2) break;
+        for (let i = 1; i < ann.points.length; i++) {
+          const p1 = ann.points[i - 1];
+          const p2 = ann.points[i];
+          page.drawLine({
+            start: { x: p1.x * pw, y: ph - p1.y * ph },
+            end: { x: p2.x * pw, y: ph - p2.y * ph },
+            thickness: ann.lineWidth ?? 2,
+            color: c,
+            opacity: ann.opacity,
+            lineCap: LineCapStyle.Round,
+          });
+        }
+        break;
+      }
+    }
+  }
+
+  return doc.save();
+}
+
+// ─── Redaction ────────────────────────────────────────────────────────────────
+
+export interface RedactionRect {
+  pageIndex: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Applies redaction rectangles to a PDF.
+ * Draws black filled rectangles over the specified areas.
+ * NOTE: This is visual redaction — for full content removal, use server-side PyMuPDF.
+ */
+export async function applyRedactions(
+  buffer: ArrayBuffer,
+  redactions: RedactionRect[]
+): Promise<Uint8Array> {
+  const doc = await loadDoc(buffer);
+  const pages = doc.getPages();
+
+  for (const rect of redactions) {
+    const page = pages[rect.pageIndex];
+    if (!page) continue;
+
+    const { width: pw, height: ph } = page.getSize();
+    page.drawRectangle({
+      x: rect.x * pw,
+      y: ph - rect.y * ph - rect.height * ph,
+      width: rect.width * pw,
+      height: rect.height * ph,
+      color: grayscale(0),
+      opacity: 1,
+      borderWidth: 0,
+    });
+  }
 
   return doc.save();
 }

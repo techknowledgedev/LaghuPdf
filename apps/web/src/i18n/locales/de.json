@@ -1,0 +1,137 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "Moderne PDF-Werkzeuge. Privat. Kostenlos. Open Source."
+  },
+  "nav": {
+    "home": "Startseite",
+    "compress": "Komprimieren",
+    "merge": "Zusammenführen",
+    "split": "Aufteilen",
+    "pageTools": "Seitenwerkzeuge",
+    "convert": "Konvertieren",
+    "protect": "Schützen",
+    "watermark": "Wasserzeichen",
+    "pageNumbers": "Seitenzahlen",
+    "metadata": "Metadaten",
+    "annotate": "Annotieren",
+    "redact": "Schwärzen",
+    "settings": "Einstellungen"
+  },
+  "home": {
+    "hero": "Alle Ihre PDF-Werkzeuge an einem Ort",
+    "subhero": "Kostenlos, privat und Open Source. Dateien werden nach Möglichkeit lokal verarbeitet — niemals gespeichert.",
+    "tools": "Werkzeuge"
+  },
+  "tools": {
+    "compress": { "title": "PDF komprimieren", "desc": "Dateigröße reduzieren bei gleichbleibender Qualität." },
+    "merge": { "title": "PDFs zusammenführen", "desc": "Mehrere PDFs zu einem Dokument kombinieren." },
+    "split": { "title": "PDF aufteilen", "desc": "Seiten extrahieren oder nach Bereich, Lesezeichen oder Größe aufteilen." },
+    "pageTools": { "title": "Seitenwerkzeuge", "desc": "Seiten drehen, löschen, neu anordnen und extrahieren." },
+    "pdfToImage": { "title": "PDF zu Bild", "desc": "PDF-Seiten in PNG, JPEG oder WebP konvertieren." },
+    "imageToPdf": { "title": "Bild zu PDF", "desc": "Bilder zu einem einzelnen PDF-Dokument zusammenfügen." },
+    "protect": { "title": "PDF schützen", "desc": "Passwortschutz und Verschlüsselung zu PDFs hinzufügen." },
+    "watermark": { "title": "Wasserzeichen", "desc": "Text- oder Bildwasserzeichen zu PDF-Seiten hinzufügen." },
+    "pageNumbers": { "title": "Seitenzahlen", "desc": "Seitenzahlen mit benutzerdefinierter Formatierung hinzufügen." },
+    "metadata": { "title": "Metadaten", "desc": "PDF-Dokumenteigenschaften anzeigen und bearbeiten." },
+    "annotate": { "title": "PDF annotieren", "desc": "Text, Hervorhebungen, Formen und Zeichnungen hinzufügen." },
+    "redact": { "title": "PDF schwärzen", "desc": "Sensible Inhalte in Ihrem PDF schwärzen." }
+  },
+  "dropzone": {
+    "title": "PDF-Dateien hier ablegen",
+    "or": "oder",
+    "browse": "Dateien durchsuchen",
+    "hint": "Unterstützt PDF-Dateien bis zu {{maxSize}}",
+    "multipleHint": "Mehrere Dateien ablegen, um sie gemeinsam zu verarbeiten"
+  },
+  "compress": {
+    "title": "PDF komprimieren",
+    "preset": "Komprimierungsvoreinstellung",
+    "colorDpi": "Farb-DPI",
+    "grayDpi": "Graustufen-DPI",
+    "monoDpi": "Mono-DPI",
+    "jpegQuality": "JPEG-Qualität",
+    "jpegQualityHint": "Höher = bessere Qualität, größere Datei",
+    "originalSize": "Original",
+    "compressedSize": "Komprimiert",
+    "savings": "Gespart",
+    "compress": "Komprimieren",
+    "compressing": "Komprimierung läuft…"
+  },
+  "merge": {
+    "title": "PDFs zusammenführen",
+    "addFiles": "Weitere Dateien hinzufügen",
+    "fileOrder": "Dateien zum Neuanordnen ziehen",
+    "merge": "Zusammenführen",
+    "merging": "Zusammenführung läuft…"
+  },
+  "split": {
+    "title": "PDF aufteilen",
+    "mode": {
+      "range": "Nach Seitenbereich",
+      "every": "Alle N Seiten",
+      "bookmarks": "Nach Lesezeichen",
+      "size": "Nach Dateigröße"
+    },
+    "addRange": "Bereich hinzufügen",
+    "from": "Von Seite",
+    "to": "Bis Seite",
+    "everyN": "Aufteilen alle",
+    "pages": "Seiten",
+    "split": "Aufteilen",
+    "splitting": "Aufteilung läuft…"
+  },
+  "pageTools": {
+    "title": "Seitenwerkzeuge",
+    "selectAll": "Alle auswählen",
+    "deselectAll": "Alle abwählen",
+    "rotate90": "90° drehen",
+    "rotate180": "180° drehen",
+    "rotateMinus90": "-90° drehen",
+    "delete": "Ausgewählte löschen",
+    "extract": "Ausgewählte extrahieren",
+    "save": "Änderungen speichern",
+    "saving": "Speichern…",
+    "pageOf": "Seite {{n}} von {{total}}"
+  },
+  "convert": {
+    "title": "Konvertieren",
+    "pdfToImage": "PDF → Bild",
+    "imageToPdf": "Bilder → PDF",
+    "format": "Bildformat",
+    "dpi": "DPI",
+    "pageSize": "Seitengröße",
+    "margin": "Rand (pt)",
+    "convert": "Konvertieren",
+    "converting": "Konvertierung läuft…",
+    "downloadAll": "Alle herunterladen (ZIP)"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "theme": "Design",
+    "language": "Sprache",
+    "maxFileSize": "Max. Dateigröße (MB)",
+    "themes": {
+      "light": "Hell",
+      "dark": "Dunkel",
+      "system": "System"
+    }
+  },
+  "common": {
+    "download": "Herunterladen",
+    "downloadAll": "Alle herunterladen",
+    "clear": "Leeren",
+    "cancel": "Abbrechen",
+    "processing": "Verarbeitung…",
+    "done": "Fertig",
+    "error": "Ein Fehler ist aufgetreten",
+    "retry": "Erneut versuchen",
+    "fileSize": "{{size}} MB",
+    "pages": "{{n}} Seiten",
+    "page": "{{n}} Seite"
+  },
+  "privacy": {
+    "badge": "Datenschutz zuerst",
+    "tooltip": "Im Browser verarbeitbare Vorgänge laufen zu 100 % lokal. Serverseitig verarbeitete Dateien werden innerhalb von 30 Minuten gelöscht."
+  }
+}

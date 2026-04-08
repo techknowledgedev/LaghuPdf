@@ -10,6 +10,8 @@ import {
   Stamp,
   Hash,
   FileText,
+  PenLine,
+  EyeOff,
   Settings,
   Home,
   Shield,
@@ -33,6 +35,8 @@ const moreNavItems = [
   { to: "/watermark", label: "nav.watermark", icon: Stamp },
   { to: "/page-numbers", label: "nav.pageNumbers", icon: Hash },
   { to: "/metadata", label: "nav.metadata", icon: FileText },
+  { to: "/annotate", label: "nav.annotate", icon: PenLine },
+  { to: "/redact", label: "nav.redact", icon: EyeOff },
 ];
 
 export default function Layout() {

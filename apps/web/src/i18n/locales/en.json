@@ -14,6 +14,8 @@
     "watermark": "Watermark",
     "pageNumbers": "Page #",
     "metadata": "Metadata",
+    "annotate": "Annotate",
+    "redact": "Redact",
     "settings": "Settings"
   },
   "home": {
@@ -31,7 +33,9 @@
     "protect": { "title": "Protect PDF", "desc": "Add password protection and encryption to PDFs." },
     "watermark": { "title": "Watermark", "desc": "Add text or image watermarks to PDF pages." },
     "pageNumbers": { "title": "Page Numbers", "desc": "Add page numbers with custom formatting." },
-    "metadata": { "title": "Metadata", "desc": "View and edit PDF document properties." }
+    "metadata": { "title": "Metadata", "desc": "View and edit PDF document properties." },
+    "annotate": { "title": "Annotate PDF", "desc": "Add text, highlights, shapes, and drawings." },
+    "redact": { "title": "Redact PDF", "desc": "Black out sensitive content in your PDF." }
   },
   "dropzone": {
     "title": "Drop PDF files here",
