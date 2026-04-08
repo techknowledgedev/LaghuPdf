@@ -1,0 +1,30 @@
+{
+  "name": "pdftwist",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PdfTwist — Modern open-source PDF editor and compressor",
+  "scripts": {
+    "dev": "turbo run dev --parallel",
+    "dev:web": "turbo run dev --filter=@pdftwist/web",
+    "dev:api": "turbo run dev --filter=@pdftwist/api",
+    "dev:desktop": "turbo run dev --filter=@pdftwist/desktop",
+    "build": "turbo run build",
+    "build:web": "turbo run build --filter=@pdftwist/web",
+    "build:api": "turbo run build --filter=@pdftwist/api",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "typescript-eslint": "^8.0.0",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "Outils PDF modernes. Privés. Gratuits. Open source."
+  },
+  "nav": {
+    "home": "Accueil",
+    "compress": "Compresser",
+    "merge": "Fusionner",
+    "split": "Diviser",
+    "pageTools": "Pages",
+    "convert": "Convertir",
+    "protect": "Protéger",
+    "watermark": "Filigrane",
+    "pageNumbers": "N° page",
+    "metadata": "Métadonnées",
+    "annotate": "Annoter",
+    "redact": "Caviarder",
+    "settings": "Paramètres"
+  },
+  "home": {
+    "hero": "Tous vos outils PDF en un seul endroit",
+    "subhero": "Gratuit, privé et open source. Les fichiers sont traités localement quand c'est possible.",
+    "tools": "Outils"
+  },
+  "tools": {
+    "compress": { "title": "Compresser PDF", "desc": "Réduire la taille en préservant la qualité." },
+    "merge": { "title": "Fusionner PDFs", "desc": "Combiner plusieurs PDFs en un seul document." },
+    "split": { "title": "Diviser PDF", "desc": "Extraire des pages ou diviser par plage." },
+    "pageTools": { "title": "Outils de page", "desc": "Pivoter, supprimer, réordonner et extraire." },
+    "pdfToImage": { "title": "PDF en Image", "desc": "Convertir les pages en PNG, JPEG ou WebP." },
+    "imageToPdf": { "title": "Image en PDF", "desc": "Combiner des images en un document PDF." },
+    "protect": { "title": "Protéger PDF", "desc": "Ajouter mot de passe et chiffrement." },
+    "watermark": { "title": "Filigrane", "desc": "Ajouter des filigranes texte ou image." },
+    "pageNumbers": { "title": "Numéros de page", "desc": "Ajouter des numéros avec formatage personnalisé." },
+    "metadata": { "title": "Métadonnées", "desc": "Voir et modifier les propriétés du document." },
+    "annotate": { "title": "Annoter PDF", "desc": "Ajouter texte, surlignages, formes et dessins." },
+    "redact": { "title": "Caviarder PDF", "desc": "Masquer le contenu sensible de votre PDF." }
+  },
+  "dropzone": {
+    "title": "Déposez vos fichiers PDF ici",
+    "or": "ou",
+    "browse": "Parcourir les fichiers",
+    "hint": "Fichiers PDF jusqu'à {{maxSize}} supportés",
+    "multipleHint": "Déposez plusieurs fichiers pour les traiter ensemble"
+  },
+  "compress": {
+    "title": "Compresser PDF",
+    "preset": "Préréglage de compression",
+    "colorDpi": "DPI Couleur",
+    "grayDpi": "DPI Gris",
+    "monoDpi": "DPI Mono",
+    "jpegQuality": "Qualité JPEG",
+    "jpegQualityHint": "Plus élevé = meilleure qualité, fichier plus gros",
+    "originalSize": "Original",
+    "compressedSize": "Compressé",
+    "savings": "Économie",
+    "compress": "Compresser",
+    "compressing": "Compression…"
+  },
+  "merge": {
+    "title": "Fusionner PDFs",
+    "addFiles": "Ajouter des fichiers",
+    "fileOrder": "Glissez pour réordonner",
+    "merge": "Fusionner",
+    "merging": "Fusion…"
+  },
+  "split": {
+    "title": "Diviser PDF",
+    "mode": { "range": "Par plage", "every": "Toutes les N pages", "bookmarks": "Par signets", "size": "Par taille" },
+    "addRange": "Ajouter une plage",
+    "from": "De la page",
+    "to": "À la page",
+    "everyN": "Diviser toutes les",
+    "pages": "pages",
+    "split": "Diviser",
+    "splitting": "Division…"
+  },
+  "pageTools": {
+    "title": "Outils de page",
+    "selectAll": "Tout sélectionner",
+    "deselectAll": "Tout désélectionner",
+    "rotate90": "Pivoter 90°",
+    "rotate180": "Pivoter 180°",
+    "rotateMinus90": "Pivoter -90°",
+    "delete": "Supprimer",
+    "extract": "Extraire",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "pageOf": "Page {{n}} de {{total}}"
+  },
+  "convert": {
+    "title": "Convertir",
+    "pdfToImage": "PDF → Image",
+    "imageToPdf": "Images → PDF",
+    "format": "Format d'image",
+    "dpi": "DPI",
+    "pageSize": "Taille de page",
+    "margin": "Marge (pt)",
+    "convert": "Convertir",
+    "converting": "Conversion…",
+    "downloadAll": "Tout télécharger (ZIP)"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "theme": "Thème",
+    "language": "Langue",
+    "maxFileSize": "Taille max (Mo)",
+    "themes": { "light": "Clair", "dark": "Sombre", "system": "Système" }
+  },
+  "common": {
+    "download": "Télécharger",
+    "downloadAll": "Tout télécharger",
+    "clear": "Effacer",
+    "cancel": "Annuler",
+    "processing": "Traitement…",
+    "done": "Terminé",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer",
+    "fileSize": "{{size}} Mo",
+    "pages": "{{n}} pages",
+    "page": "{{n}} page"
+  },
+  "privacy": {
+    "badge": "Vie privée d'abord",
+    "tooltip": "Les opérations du navigateur fonctionnent 100% localement."
+  }
+}

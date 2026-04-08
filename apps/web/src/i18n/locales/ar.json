@@ -1,0 +1,128 @@
+{
+  "app": {
+    "name": "PdfTwist",
+    "tagline": "أدوات PDF حديثة. خاصة. مجانية. مفتوحة المصدر."
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "compress": "ضغط",
+    "merge": "دمج",
+    "split": "تقسيم",
+    "pageTools": "أدوات الصفحات",
+    "convert": "تحويل",
+    "protect": "حماية",
+    "watermark": "علامة مائية",
+    "pageNumbers": "ترقيم",
+    "metadata": "بيانات وصفية",
+    "annotate": "تعليق",
+    "redact": "تنقيح",
+    "settings": "الإعدادات"
+  },
+  "home": {
+    "hero": "جميع أدوات PDF في مكان واحد",
+    "subhero": "مجانية وخاصة ومفتوحة المصدر. تتم معالجة الملفات محلياً عند الإمكان.",
+    "tools": "الأدوات"
+  },
+  "tools": {
+    "compress": { "title": "ضغط PDF", "desc": "تقليل حجم الملف مع الحفاظ على الجودة." },
+    "merge": { "title": "دمج PDFs", "desc": "دمج عدة ملفات PDF في مستند واحد." },
+    "split": { "title": "تقسيم PDF", "desc": "استخراج صفحات أو تقسيم حسب النطاق." },
+    "pageTools": { "title": "أدوات الصفحات", "desc": "تدوير وحذف وإعادة ترتيب واستخراج الصفحات." },
+    "pdfToImage": { "title": "PDF إلى صورة", "desc": "تحويل صفحات PDF إلى PNG أو JPEG أو WebP." },
+    "imageToPdf": { "title": "صورة إلى PDF", "desc": "دمج الصور في مستند PDF واحد." },
+    "protect": { "title": "حماية PDF", "desc": "إضافة حماية بكلمة مرور وتشفير." },
+    "watermark": { "title": "علامة مائية", "desc": "إضافة علامات مائية نصية أو صورية." },
+    "pageNumbers": { "title": "أرقام الصفحات", "desc": "إضافة أرقام صفحات بتنسيق مخصص." },
+    "metadata": { "title": "البيانات الوصفية", "desc": "عرض وتحرير خصائص المستند." },
+    "annotate": { "title": "تعليق على PDF", "desc": "إضافة نصوص وتمييز وأشكال ورسومات." },
+    "redact": { "title": "تنقيح PDF", "desc": "إخفاء المحتوى الحساس في ملف PDF." }
+  },
+  "dropzone": {
+    "title": "أسقط ملفات PDF هنا",
+    "or": "أو",
+    "browse": "تصفح الملفات",
+    "hint": "يدعم ملفات PDF حتى {{maxSize}}",
+    "multipleHint": "أسقط عدة ملفات لمعالجتها معاً"
+  },
+  "compress": {
+    "title": "ضغط PDF",
+    "preset": "إعداد الضغط المسبق",
+    "colorDpi": "DPI الألوان",
+    "grayDpi": "DPI الرمادي",
+    "monoDpi": "DPI أحادي",
+    "jpegQuality": "جودة JPEG",
+    "jpegQualityHint": "أعلى = جودة أفضل، ملف أكبر",
+    "originalSize": "الأصلي",
+    "compressedSize": "المضغوط",
+    "savings": "التوفير",
+    "compress": "ضغط",
+    "compressing": "جارٍ الضغط…"
+  },
+  "merge": {
+    "title": "دمج PDFs",
+    "addFiles": "إضافة ملفات",
+    "fileOrder": "اسحب لإعادة الترتيب",
+    "merge": "دمج",
+    "merging": "جارٍ الدمج…"
+  },
+  "split": {
+    "title": "تقسيم PDF",
+    "mode": { "range": "حسب نطاق الصفحات", "every": "كل N صفحة", "bookmarks": "حسب الإشارات المرجعية", "size": "حسب الحجم" },
+    "addRange": "إضافة نطاق",
+    "from": "من صفحة",
+    "to": "إلى صفحة",
+    "everyN": "تقسيم كل",
+    "pages": "صفحات",
+    "split": "تقسيم",
+    "splitting": "جارٍ التقسيم…"
+  },
+  "pageTools": {
+    "title": "أدوات الصفحات",
+    "selectAll": "تحديد الكل",
+    "deselectAll": "إلغاء التحديد",
+    "rotate90": "تدوير 90°",
+    "rotate180": "تدوير 180°",
+    "rotateMinus90": "تدوير -90°",
+    "delete": "حذف المحدد",
+    "extract": "استخراج المحدد",
+    "save": "حفظ التغييرات",
+    "saving": "جارٍ الحفظ…",
+    "pageOf": "صفحة {{n}} من {{total}}"
+  },
+  "convert": {
+    "title": "تحويل",
+    "pdfToImage": "PDF → صورة",
+    "imageToPdf": "صور → PDF",
+    "format": "تنسيق الصورة",
+    "dpi": "DPI",
+    "pageSize": "حجم الصفحة",
+    "margin": "الهامش (نقطة)",
+    "convert": "تحويل",
+    "converting": "جارٍ التحويل…",
+    "downloadAll": "تحميل الكل (ZIP)"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "theme": "المظهر",
+    "language": "اللغة",
+    "maxFileSize": "الحجم الأقصى (ميجابايت)",
+    "themes": { "light": "فاتح", "dark": "داكن", "system": "النظام" }
+  },
+  "common": {
+    "download": "تحميل",
+    "downloadAll": "تحميل الكل",
+    "clear": "مسح",
+    "cancel": "إلغاء",
+    "processing": "جارٍ المعالجة…",
+    "done": "تم",
+    "error": "حدث خطأ",
+    "retry": "إعادة المحاولة",
+    "fileSize": "{{size}} ميجابايت",
+    "pages": "{{n}} صفحات",
+    "page": "{{n}} صفحة"
+  },
+  "privacy": {
+    "badge": "الخصوصية أولاً",
+    "tooltip": "عمليات المتصفح تعمل محلياً بنسبة 100%."
+  }
+}

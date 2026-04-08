@@ -1,0 +1,101 @@
+version: "3.9"
+
+# ─── PdfTwist Self-Hosted Deployment ─────────────────────────────────────────
+#
+# Quick start:
+#   docker compose up -d
+#
+# Access: http://localhost:8080
+#
+# Services:
+#   nginx        — Reverse proxy + static web app server
+#   api          — Node.js Fastify API
+#   worker       — Python FastAPI + Ghostscript compression engine
+#
+# Environment variables: copy .env.example to .env and edit as needed.
+
+services:
+  # ─── Web + Reverse Proxy ──────────────────────────────────────────────────
+  nginx:
+    image: nginx:1.27-alpine
+    ports:
+      - "${PORT:-8080}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - web_dist:/usr/share/nginx/html:ro
+    depends_on:
+      api:
+        condition: service_healthy
+      worker:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pdftwist
+
+  # ─── Node.js API ──────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.api
+    environment:
+      NODE_ENV: production
+      API_PORT: 3001
+      API_HOST: 0.0.0.0
+      PYTHON_WORKER_HOST: http://worker:8000
+      TEMP_DIR: /tmp/pdftwist
+      MAX_FILE_SIZE: ${MAX_FILE_SIZE:-104857600}
+      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX:-10}
+      RATE_LIMIT_WINDOW_MS: 60000
+      OUTPUT_FILE_TTL_MINUTES: ${OUTPUT_FILE_TTL_MINUTES:-30}
+      TEMP_FILE_TTL_SECONDS: 60
+    volumes:
+      - pdftwist_tmp:/tmp/pdftwist
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3001/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+    networks:
+      - pdftwist
+
+  # ─── Python Worker (Ghostscript) ──────────────────────────────────────────
+  worker:
+    build:
+      context: ../apps/python-worker
+      dockerfile: Dockerfile
+    environment:
+      TEMP_DIR: /tmp/pdftwist
+    volumes:
+      - pdftwist_tmp:/tmp/pdftwist
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    restart: unless-stopped
+    networks:
+      - pdftwist
+
+  # ─── Web build (one-shot) ────────────────────────────────────────────────
+  web_builder:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ..:/app
+      - web_dist:/app/apps/web/dist
+    command: sh -c "corepack enable pnpm && pnpm install && pnpm --filter @pdftwist/web build"
+    profiles:
+      - build
+
+volumes:
+  pdftwist_tmp:
+    driver: local
+  web_dist:
+    driver: local
+
+networks:
+  pdftwist:
+    driver: bridge
